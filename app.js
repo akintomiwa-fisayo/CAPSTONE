@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const db = require('./dbconn.js');
 
 const app = express();
 
@@ -10,32 +11,19 @@ app.use((req, res, next) => {
     next();
 });
 
+if(!db._connected){
+	db.connect().then(() => {
+		console.log('Successfully connected to postgresSQL!');
+	
+	}).catch((error) => {
+		console.log('Unable to connect to postgresSQL!');
+		console.log(error);
+	});
+}
+
 app.use(bodyParser.json());
 
 
 
-///////////////////////////////////////////////////////
-app.post((req, res, next) => {
-
-
-});
-app.use((req, res, next) => {
-  console.log('Request received!');
-  next();
-});
-
-app.use((req, res, next) => {
-  res.status(201);
-  next();
-});
-
-app.use((req, res, next) => {
-  res.json({ message: 'Your request was successful!' });
-  next();
-});
-
-app.use((req, res, next) => {
-  console.log('Response sent successfully!');
-});
 
 module.exports = app;
