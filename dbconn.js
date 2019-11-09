@@ -1,15 +1,13 @@
-const {Pool, Client} = require('pg');
-const connectionString = 'postgressql://postgres:root@localhost:8001/capstonedb';
+const { Pool } = require('pg');
 
-const client = new Client({
-    connectionString: connectionString
+// console.log(process.env);
+
+const pool = new Pool({
+  host: 'localhost',
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_USER_PASS,
+  database: process.env.NODE_ENV === 'test' ? process.env.TEST_DB_NAME : process.env.DB_NAME,
 });
 
-module.exports = client;
-// client.connect();
-
-/* client.query('SELECT * from employees', (err, res) => {
-    console.log(err, res);
-    client.end();
-});
- */
+module.exports = pool;
