@@ -25,7 +25,17 @@ db.connect().then(() => {
 
 // Parse request body
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use((req, res, next) => {
+  bodyParser.json()(req, res, (err) => {
+    if (err) {
+      const error = new Error('Bad request');
+      error.status = 400;
+      next(error);
+    }
+    return next();
+  });
+});
+
 
 // Routes requests to specific URI
 app.use('/auth', authRoutes);
@@ -33,11 +43,14 @@ app.use('/auth', authRoutes);
 // Handle error
 app.use((req, res, next) => {
   // If this middleware is executed then endpoint requested for wasn't expected
-  const error = new Error('NOT FOUND');
+  const error = new Error('Not found');
   error.status = 404;
   next(error);
 });
-app.use((error, req, res) => {
+
+// eslint-disable-next-line no-unused-vars
+app.use((error, req, res, _next) => {
+  console.log('FOUND A LOST ERROR : ', error);
   res.status(error.status || 500).json({
     status: 'error',
     error: error.message,

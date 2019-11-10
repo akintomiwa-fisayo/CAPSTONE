@@ -155,3 +155,66 @@ exports.createUser = (req, res) => {
     });
   }
 };
+
+exports.signIn = (req, res) => {
+  if (req.body.email && req.body.password) {
+    db.query('SELECT token, user_id, password FROM users WHERE "email"=$1', [req.body.email]).then(({ rowCount, rows }) => {
+      if (rowCount > 0) {
+        const user = rows[0];
+        bcrypt.compare(req.body.password, user.password).then((valid) => {
+          if (valid) {
+            const token = jwt.sign({
+              userId: user.user_id,
+              email: req.body.email,
+            }, process.env.USERS_TOKEN_SECRET, {
+              expiresIn: '24h',
+            });
+
+            db.query('UPDATE users SET "token"=$1 WHERE "user_id"=$2', [token, user.user_id]).then(() => {
+              res.status(200).json({
+                status: 'success',
+                data: {
+                  token,
+                  userId: user.user_id,
+                },
+              });
+            }).catch((error) => {
+              console.log(error);
+              res.status(500).json({
+                status: 'error',
+                error: 'Sorry, we couldn\'t complete your request please try again',
+              });
+            });
+          } else {
+            res.status(400).json({
+              status: 'error',
+              error: 'Incorrect email or password',
+            });
+          }
+        }).catch((error) => {
+          console.log(error);
+          res.status(500).json({
+            status: 'error',
+            error: 'Sorry, we couldn\'t complete your request please try again',
+          });
+        });
+      } else {
+        res.status(400).json({
+          status: 'error',
+          error: 'Incorrect email or password',
+        });
+      }
+    }).catch((error) => {
+      console.log(error);
+      res.status(500).json({
+        status: 'error',
+        error: 'Sorry, we couldn\'t complete your request please try again',
+      });
+    });
+  } else {
+    res.status(400).json({
+      status: 'error',
+      error: 'Bad request',
+    });
+  }
+};

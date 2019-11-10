@@ -5,6 +5,7 @@ exports.parseUser = (req) => new Promise((resolve, reject) => {
   /* must have first called get-db-userTokenSecret in router list of middlewares */
 
   try {
+    if (!req.headers.authorization) throw new Error('Bearer token undefined');
     const token = req.headers.authorization.split(' ')[1];
     const decodedToken = jwt.verify(token, process.env.USERS_TOKEN_SECRET);
     const { userId, email } = decodedToken;
@@ -21,7 +22,7 @@ exports.parseUser = (req) => new Promise((resolve, reject) => {
 exports.employee = (req, res, next) => {
   exports.parseUser(req).then((result) => {
     if (result) {
-      global.$User = result;
+      req.loggedInUser = result;
       next();
     } else {
       res.status(401).json({
@@ -43,7 +44,7 @@ exports.admin = (req, res, next) => {
     if (user) {
       db.query('SELECT job_title FROM job_roles WHERE job_id = $1', [user.job_role]).then(({ rowCount, rows }) => {
         if (rowCount > 0 && rows[0].job_title === 'admin') {
-          global.$User = user;
+          req.loggedInUser = user;
           next();
         } else {
           console.log('Error : User not admin');
