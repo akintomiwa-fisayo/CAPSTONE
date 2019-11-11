@@ -1,11 +1,8 @@
 /* eslint-disable camelcase */
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const db = require('../dbconn');
 const cloud = require('../middleware/cloudinary');
 const lib = require('../middleware/lib');
-
 
 exports.create = (req, res) => {
   const validate = () => {
