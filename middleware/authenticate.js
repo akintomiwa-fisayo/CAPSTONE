@@ -26,15 +26,15 @@ exports.employee = (req, res, next) => {
       next();
     } else {
       res.status(401).json({
-        status: 'errort',
-        error: 'Invalid request',
+        status: 'error',
+        error: 'Unauthorized',
       });
     }
   }).catch((error) => {
     console.log(error);
     res.status(401).json({
-      status: 'errort',
-      error: 'Invalid request',
+      status: 'error',
+      error: 'Unauthorized',
     });
   });
 };
@@ -50,14 +50,14 @@ exports.admin = (req, res, next) => {
           console.log('Error : User not admin');
           res.status(401).json({
             status: 'error',
-            error: 'Invalid request',
+            error: 'Unauthorized',
           });
         }
       }).catch((error) => {
         console.log(error);
         res.status(401).json({
           status: 'error',
-          error: 'Invalid request',
+          error: 'Unauthorized',
         });
       });
     } else throw new Error('User was not found');
@@ -65,7 +65,7 @@ exports.admin = (req, res, next) => {
     console.log(error);
     res.status(401).json({
       status: 'error',
-      error: 'Invalid request',
+      error: 'Unauthorized',
     });
   });
 };

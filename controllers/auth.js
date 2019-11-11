@@ -11,7 +11,7 @@ const lib = require('../middleware/lib');
 exports.createUser = (req, res) => {
   const validate = () => {
     let isValid = true;
-    const error = {};
+    const test = {};
     const data = {
       firstName: req.body.firstName ? req.body.firstName.toLowerCase() : false,
       lastName: req.body.lastName ? req.body.lastName.toLowerCase() : false,
@@ -34,55 +34,57 @@ exports.createUser = (req, res) => {
 
     // Test to validate first name
     if (data.firstName) {
-      error.firstName = lib.isEmpty(data.firstName) ? 'Invalid: can\'t be empty' : 'Valid';
-    } else error.firstName = 'undefined';
+      test.firstName = lib.isEmpty(data.firstName) ? 'Invalid: can\'t be empty' : 'Valid';
+    } else test.firstName = 'Undefined';
 
     // Test to validate last name
     if (data.lastName) {
-      error.lastName = lib.isEmpty(data.lastName) ? 'Invalid: can\'t be empty' : 'Valid';
-    } else error.lastName = 'undefined';
+      test.lastName = lib.isEmpty(data.lastName) ? 'Invalid: can\'t be empty' : 'Valid';
+    } else test.lastName = 'Undefined';
 
     // Test to validate email
     if (data.email) {
       if (lib.isEmail(data.email)) {
-        error.email = db.$usersEmail.indexOf(data.email) !== -1 ? 'Invalid: already exist' : 'Valid';
-      } else error.email = 'Invalid: has to be a Valid email';
-    } else error.email = 'undefined';
+        test.email = db.$usersEmail.indexOf(data.email) !== -1 ? 'Invalid: already exist' : 'Valid';
+      } else test.email = 'Invalid: has to be a Valid email';
+    } else test.email = 'Undefined';
 
     // Test to validate password
     if (data.password) {
-      error.password = (lib.isEmpty(data.password) || data.password.length < 8) ? 'Invalid: needs to be atleast 8 character long' : 'Valid';
-    } else error.password = 'undefined';
+      test.password = (lib.isEmpty(data.password) || data.password.length < 8) ? 'Invalid: needs to be atleast 8 character long' : 'Valid';
+    } else test.password = 'Undefined';
 
     // Test to validate gender
     if (data.gender) {
-      error.gender = ['male', 'female'].indexOf(data.gender) === -1 ? 'Invalid: has to be "male" or "female"' : 'Valid';
-    } else error.gender = 'undefined';
+      test.gender = ['male', 'female'].indexOf(data.gender) === -1 ? 'Invalid: has to be "male" or "female"' : 'Valid';
+    } else test.gender = 'Undefined';
 
     // Test to validate jobRole
     const department = isJobRole(data.jobRole);
     if (data.jobRole) {
-      error.jobRole = !department ? 'Invalid: not a Valid job role' : 'Valid';
-    } else error.jobRole = 'undefined';
+      test.jobRole = !department ? 'Invalid: not a Valid job role' : 'Valid';
+    } else test.jobRole = 'Undefined';
 
     // Test to validate department
     if (data.department) {
-      error.department = data.department.toLowerCase() !== department ? 'Invalid: not a Valid department' : 'Valid';
-    } else error.department = 'undefined';
+      test.department = data.department.toLowerCase() !== department ? 'Invalid: not a Valid department' : 'Valid';
+    } else test.department = 'Undefined';
 
     // Test to validate address
     if (data.address) {
-      error.address = lib.isEmpty(data.address) ? 'Invalid: can\'t be empty' : 'Valid';
-    } else error.address = 'undefined';
+      test.address = lib.isEmpty(data.address) ? 'Invalid: can\'t be empty' : 'Valid';
+    } else test.address = 'Undefined';
 
     // Test to validate passport
-    if (req.files && req.files[0] && req.files[0].fieldname.toLowerCase() === 'passport') {
-      error.passport = ['image/jpg', 'image/jpeg'].indexOf(req.files[0].mimetype) === -1 ? 'Invalid: file type must be either JPEG or JPG' : 'Valid';
-    } else error.passport = 'undefined';
+    if (req.file) {
+      test.passport = ['image/jpg', 'image/jpeg'].indexOf(req.file.mimetype) === -1 ? 'Invalid: file type must be either JPEG or JPG' : 'Valid';
+    } else test.passport = 'Undefined';
 
-    Object.keys(error).forEach((key) => {
-      if (isValid && error[key] !== 'Valid') {
-        isValid = false;
+    const error = {};
+    Object.keys(test).forEach((key) => {
+      if (test[key] !== 'Valid') {
+        error[key] = test[key];
+        if (isValid) isValid = false;
       }
     });
 
@@ -92,8 +94,9 @@ exports.createUser = (req, res) => {
 
   // Validate request before submitting
   if (report.status) {
-    cloud.uploads(req.files[0].path).then(({ secure_url }) => {
-      fs.unlink(req.files[0].path, (error) => (error ? console.log('Unable to delete file after upload :', error) : ''));
+    // Upload user passport to cloudinary
+    cloud.uploads(req.file.path).then(({ secure_url }) => {
+      fs.unlink(req.file.path, (error) => (error ? console.log('Unable to delete file after upload :', error) : ''));
       const { data } = report;
 
       // Hash user password
@@ -119,7 +122,7 @@ exports.createUser = (req, res) => {
               data: {
                 message: 'User account successfully created',
                 token,
-                userId,
+                userId: parseInt(userId, 10),
               },
             });
           }).catch((error) => {
@@ -139,16 +142,14 @@ exports.createUser = (req, res) => {
       });
     }).catch((error) => {
       console.log('Cloudinary error ', error);
-      fs.unlink(req.files[0].path, (err) => { console.log('Error at deleting failed upload passport', err); });
+      fs.unlink(req.file.path, (err) => { console.log('Error at deleting failed upload passport', err); });
       res.status(500).json({
         status: 'error',
         error: 'Sorry, we couldn\'t complete your request please try again',
       });
     });
   } else {
-    if (req.files) {
-      fs.unlink(req.files[0].path, (error) => (error ? console.log('Unable to delete file after upload :', error) : ''));
-    }
+    if (req.file) fs.unlink(req.file.path, (error) => (error ? console.log('Unable to delete file after upload :', error) : ''));
     res.status(400).json({
       status: 'error',
       error: report.error,
@@ -175,7 +176,7 @@ exports.signIn = (req, res) => {
                 status: 'success',
                 data: {
                   token,
-                  userId: user.user_id,
+                  userId: parseInt(user.user_id, 10),
                 },
               });
             }).catch((error) => {

@@ -1,6 +1,7 @@
 /* eslint-disable no-multi-str */
 /* eslint-disable no-undef */
 const db = require('../../../dbconn');
+const { users: { user, admin } } = require('../../samples');
 
 
 describe('Test database', () => {
@@ -125,12 +126,52 @@ describe('Test database', () => {
         .catch((error) => reject(error));
     });
 
+    const fillUsersTable = () => new Promise((resolve, reject) => {
+      db.query(`\
+      INSERT INTO users ("user_id", "passport_url", "first_name", "last_name", "email", "password", "gender", "job_role", "department", "address", "token")\
+      VALUES\
+      (\
+        '${admin.id}',
+        '${admin.passport}',
+        '${admin.firstName}',
+        '${admin.lastName}',
+        '${admin.email}',
+        '${admin.password}',
+        '${admin.gender}',
+        '${admin.jobRole}',
+        '${admin.department}',
+        '${admin.address}',
+        '${admin.token}'
+      ),
+      (
+        '${user.id}',
+        '${user.passport}',
+        '${user.firstName}',
+        '${user.lastName}',
+        '${user.email}',
+        '${user.password}',
+        '${user.gender}',
+        '${user.jobRole}',
+        '${user.department}',
+        '${user.address}',
+        '${user.token}'
+      )
+    `).then((result) => resolve(result))
+        .catch((error) => reject(error));
+    });
+
     const buildPostsTable = () => new Promise((resolve, reject) => {
       db.query('\
         CREATE TABLE public.posts (\
           post_id bigint NOT NULL DEFAULT nextval(\'"postId-increment"\'::regclass),\
-          post_table text COLLATE pg_catalog."C" NOT NULL,\
-          CONSTRAINT posts_pkey PRIMARY KEY (post_id)\
+          post_type text COLLATE pg_catalog."C" NOT NULL,\
+          post_author integer NOT NULL,\
+          created_on timestamp with time zone NOT NULL DEFAULT timezone(\'utc\'::text, now()),\
+          CONSTRAINT posts_pkey PRIMARY KEY (post_id),\
+          CONSTRAINT author_fkey FOREIGN KEY (post_author)\
+            REFERENCES public.users (user_id) MATCH SIMPLE\
+            ON UPDATE NO ACTION\
+            ON DELETE NO ACTION\
         )\
       ').then((result) => resolve(result))
         .catch((error) => reject(error));
@@ -139,12 +180,11 @@ describe('Test database', () => {
     const buildArticlesTable = () => new Promise((resolve, reject) => {
       db.query('\
         CREATE TABLE public.articles (\
-          article_id integer NOT NULL,\
+          post_id integer NOT NULL,\
           title text COLLATE pg_catalog."default" NOT NULL,\
           article text COLLATE pg_catalog."default" NOT NULL,\
-          created_on timestamp with time zone NOT NULL DEFAULT timezone(\'utc\'::text, now()),\
-          CONSTRAINT articles_pkey PRIMARY KEY (article_id),\
-          CONSTRAINT "articleId_fkey" FOREIGN KEY (article_id)\
+          CONSTRAINT articles_pkey PRIMARY KEY (post_id),\
+          CONSTRAINT "postId_fkey" FOREIGN KEY (post_id)\
             REFERENCES public.posts (post_id) MATCH SIMPLE\
             ON UPDATE NO ACTION\
             ON DELETE NO ACTION\
@@ -156,13 +196,12 @@ describe('Test database', () => {
     const buildGifsTable = () => new Promise((resolve, reject) => {
       db.query('\
         CREATE TABLE public.gifs (\
-          gif_id integer NOT NULL,\
+          post_id integer NOT NULL,\
           image_url text COLLATE pg_catalog."default" NOT NULL,\
           title text COLLATE pg_catalog."default",\
-          created_on timestamp with time zone NOT NULL DEFAULT timezone(\'utc\'::text, now()),\
-          CONSTRAINT gifs_pkey PRIMARY KEY (gif_id),\
+          CONSTRAINT gifs_pkey PRIMARY KEY (post_id),\
           CONSTRAINT "imageUrl_ukey" UNIQUE (image_url),\
-          CONSTRAINT "gifId_fkey" FOREIGN KEY (gif_id)\
+          CONSTRAINT "postId_fkey" FOREIGN KEY (post_id)\
             REFERENCES public.posts (post_id) MATCH SIMPLE\
             ON UPDATE NO ACTION\
             ON DELETE NO ACTION\
@@ -228,23 +267,26 @@ describe('Test database', () => {
               console.log('    - Inserted data into "job_roles" table successfully');
               buildUsersTable().then(() => {
                 console.log('  - Built "users" table successfully');
-                buildPostsTable().then(() => {
-                  console.log('  - Built "posts" table successfully');
-                  buildArticlesTable().then(() => {
-                    console.log('  - Built "articles" table successfully');
-                    buildGifsTable().then(() => {
-                      console.log('  - Built "gifs" table successfully');
-                      buildCommentsTable().then(() => {
-                        console.log('  - Built "comments" table successfully');
-                        buildDepartmentManagersTable().then(() => {
-                          console.log('  - Built "department_managers" table successfully');
-                          console.log('Build Completed');
-                          done();
-                        }).catch((error) => console.log('  ** Failed building "department_managers" table', error));
-                      }).catch((error) => console.log('  ** Failed building "comments" table', error));
-                    }).catch((error) => console.log('  ** Failed building "gifs" table', error));
-                  }).catch((error) => console.log('  ** Failed building "articles" table', error));
-                }).catch((error) => console.log('  ** Failed building "posts" table', error));
+                fillUsersTable().then(() => {
+                  console.log('    - Inserted data into "users" table successfully');
+                  buildPostsTable().then(() => {
+                    console.log('  - Built "posts" table successfully');
+                    buildArticlesTable().then(() => {
+                      console.log('  - Built "articles" table successfully');
+                      buildGifsTable().then(() => {
+                        console.log('  - Built "gifs" table successfully');
+                        buildCommentsTable().then(() => {
+                          console.log('  - Built "comments" table successfully');
+                          buildDepartmentManagersTable().then(() => {
+                            console.log('  - Built "department_managers" table successfully');
+                            console.log('Build Completed');
+                            done();
+                          }).catch((error) => console.log('  ** Failed building "department_managers" table', error));
+                        }).catch((error) => console.log('  ** Failed building "comments" table', error));
+                      }).catch((error) => console.log('  ** Failed building "gifs" table', error));
+                    }).catch((error) => console.log('  ** Failed building "articles" table', error));
+                  }).catch((error) => console.log('  ** Failed building "posts" table', error));
+                }).catch((error) => console.log('    ** Failed inserting data into "users" table', error));
               }).catch((error) => console.log('  ** Failed building "users" table', error));
             }).catch((error) => console.log('    ** Failed inserting data into "job_roles" table', error));
           }).catch((error) => console.log('  ** Failed building "job_roles" table', error));
