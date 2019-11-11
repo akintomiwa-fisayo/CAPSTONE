@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const db = require('./dbconn');
 // Import routes
 const authRoutes = require('./routes/auth');
+const articlesRoutes = require('./routes/articles');
 const gifsRoutes = require('./routes/gifs');
 // Initialize app
 const app = express();
@@ -41,6 +42,7 @@ app.use((req, res, next) => {
 // Route requests to specific URI
 app.use('/auth', authRoutes);
 app.use('/gifs', gifsRoutes);
+app.use('/articles', articlesRoutes);
 
 // Handle error
 app.use((req, res, next) => {
