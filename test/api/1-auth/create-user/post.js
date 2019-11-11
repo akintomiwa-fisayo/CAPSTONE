@@ -5,63 +5,22 @@ const request = require('supertest');
 const fs = require('fs');
 const path = require('path');
 const app = require('../../../../app');
-const dbconn = require('../../../../dbconn');
 const { users: { user, admin } } = require('../../../samples');
 
 describe('POST /auth/create-user', () => {
   let sampleImage;
 
   before((done) => {
-    console.log('Inserting data into "users" table...');
-    dbconn.query(`\
-        INSERT INTO users ("user_id", "passport_url", "first_name", "last_name", "email", "password", "gender", "job_role", "department", "address", "token")\
-        VALUES\
-        (\
-          '${admin.id}',
-          '${admin.passport}',
-          '${admin.firstName}',
-          '${admin.lastName}',
-          '${admin.email}',
-          '${admin.password}',
-          '${admin.gender}',
-          '${admin.jobRole}',
-          '${admin.department}',
-          '${admin.address}',
-          '${admin.token}'
-        ),
-        (
-          '${user.id}',
-          '${user.passport}',
-          '${user.firstName}',
-          '${user.lastName}',
-          '${user.email}',
-          '${user.password}',
-          '${user.gender}',
-          '${user.jobRole}',
-          '${user.department}',
-          '${user.address}',
-          '${user.token}'
-        )
-      `).then(() => {
-      console.log('Reading sample image...');
-      fs.readFile(path.resolve(__dirname, '../../../../samples/image.jpg'), (err, data) => {
-        if (err) {
-          throw new Error("Couldn't read sample image");
-        } else {
-          sampleImage = data;
-          done();
-        }
-      });
-    }).catch((error) => {
-      console.log('  - Failed inserting data into "users" table', error);
-      done();
+    console.log('Reading sample image...');
+    fs.readFile(path.resolve(__dirname, '../../../../samples/image.jpg'), (err, data) => {
+      if (err) {
+        throw new Error("Couldn't read sample image");
+      } else {
+        sampleImage = data;
+        done();
+      }
     });
   });
-
-  after((done) => {
-    done();
-  });
-
 
   it('Should create new employee account', (done) => {
     request(app).post('/auth/create-user')

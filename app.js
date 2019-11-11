@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const db = require('./dbconn');
 // Import routes
 const authRoutes = require('./routes/auth');
+const gifsRoutes = require('./routes/gifs');
 // Initialize app
 const app = express();
 
@@ -37,8 +38,9 @@ app.use((req, res, next) => {
 });
 
 
-// Routes requests to specific URI
+// Route requests to specific URI
 app.use('/auth', authRoutes);
+app.use('/gifs', gifsRoutes);
 
 // Handle error
 app.use((req, res, next) => {
@@ -50,7 +52,6 @@ app.use((req, res, next) => {
 
 // eslint-disable-next-line no-unused-vars
 app.use((error, req, res, _next) => {
-  console.log('FOUND A LOST ERROR : ', error);
   res.status(error.status || 500).json({
     status: 'error',
     error: error.message,
