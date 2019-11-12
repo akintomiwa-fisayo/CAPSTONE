@@ -37,3 +37,21 @@ exports.users = {
   },
   user,
 };
+
+exports.posts = {
+  articles: {
+    post_id: 10001,
+    post_type: 'article',
+    post_author: user.id,
+    title: 'sample title',
+    article: 'sample lorem article',
+  },
+  gifs: {
+    post_id: 10002,
+    post_type: 'gif',
+    post_author: user.id,
+    title: 'sample title',
+    imageUrl: 'https://res.cloudinary.com/capstone-backend/image/upload/v1573444709/yi7iws2r2jwbimlhlrmd.gif',
+
+  },
+};

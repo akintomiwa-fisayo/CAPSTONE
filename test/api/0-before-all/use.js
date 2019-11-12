@@ -1,7 +1,7 @@
 /* eslint-disable no-multi-str */
 /* eslint-disable no-undef */
 const db = require('../../../dbconn');
-const { users: { user, admin } } = require('../../samples');
+const { users: { user, admin }, posts: { articles, gifs } } = require('../../samples');
 
 
 describe('Test database', () => {
@@ -76,7 +76,7 @@ describe('Test database', () => {
           CONSTRAINT department_fkey FOREIGN KEY (dept_id)\
             REFERENCES public.departments (dept_id) MATCH SIMPLE\
             ON UPDATE NO ACTION\
-            ON DELETE NO ACTION\
+            ON DELETE CASCADE\
         )\
       ').then((result) => resolve(result))
         .catch((error) => reject(error));
@@ -171,9 +171,27 @@ describe('Test database', () => {
           CONSTRAINT author_fkey FOREIGN KEY (post_author)\
             REFERENCES public.users (user_id) MATCH SIMPLE\
             ON UPDATE NO ACTION\
-            ON DELETE NO ACTION\
+            ON DELETE CASCADE\
         )\
       ').then((result) => resolve(result))
+        .catch((error) => reject(error));
+    });
+
+    const fillPostsTable = () => new Promise((resolve, reject) => {
+      db.query(`\
+      INSERT INTO posts ("post_id", "post_type", "post_author")\
+      VALUES\
+      (\
+        '${articles.post_id}',
+        '${articles.post_type}',
+        '${articles.post_author}'
+      ),
+      (
+        '${gifs.post_id}',
+        '${gifs.post_type}',
+        '${gifs.post_author}'
+      )
+    `).then((result) => resolve(result))
         .catch((error) => reject(error));
     });
 
@@ -187,9 +205,17 @@ describe('Test database', () => {
           CONSTRAINT "postId_fkey" FOREIGN KEY (post_id)\
             REFERENCES public.posts (post_id) MATCH SIMPLE\
             ON UPDATE NO ACTION\
-            ON DELETE NO ACTION\
+            ON DELETE CASCADE\
         )\
       ').then((result) => resolve(result))
+        .catch((error) => reject(error));
+    });
+
+    const fillArticlesTable = () => new Promise((resolve, reject) => {
+      db.query(`\
+      INSERT INTO articles ("post_id", "title", "article")\
+      VALUES ( '${articles.post_id}', '${articles.title}', '${articles.article}' )
+    `).then((result) => resolve(result))
         .catch((error) => reject(error));
     });
 
@@ -204,9 +230,17 @@ describe('Test database', () => {
           CONSTRAINT "postId_fkey" FOREIGN KEY (post_id)\
             REFERENCES public.posts (post_id) MATCH SIMPLE\
             ON UPDATE NO ACTION\
-            ON DELETE NO ACTION\
+            ON DELETE CASCADE\
         )\
       ').then((result) => resolve(result))
+        .catch((error) => reject(error));
+    });
+
+    const fillGifsTable = () => new Promise((resolve, reject) => {
+      db.query(`\
+      INSERT INTO gifs ("post_id", "title", "image_url")\
+      VALUES ( '${gifs.post_id}', '${gifs.title}', '${gifs.imageUrl}' )
+    `).then((result) => resolve(result))
         .catch((error) => reject(error));
     });
 
@@ -222,11 +256,11 @@ describe('Test database', () => {
           CONSTRAINT "authorId_fkey" FOREIGN KEY (author_id)\
             REFERENCES public.users (user_id) MATCH SIMPLE\
             ON UPDATE NO ACTION\
-            ON DELETE NO ACTION,\
+            ON DELETE CASCADE,\
           CONSTRAINT "postId_fkey" FOREIGN KEY (post_id)\
             REFERENCES public.posts (post_id) MATCH SIMPLE\
             ON UPDATE NO ACTION\
-            ON DELETE NO ACTION\
+            ON DELETE CASCADE\
         )\
       ').then((result) => resolve(result))
         .catch((error) => reject(error));
@@ -243,11 +277,11 @@ describe('Test database', () => {
           CONSTRAINT dept_id FOREIGN KEY (dept_id)\
               REFERENCES public.departments (dept_id) MATCH SIMPLE\
               ON UPDATE NO ACTION\
-              ON DELETE NO ACTION,\
+              ON DELETE CASCADE,\
           CONSTRAINT "userId_fkey" FOREIGN KEY (user_id)\
               REFERENCES public.users (user_id) MATCH SIMPLE\
               ON UPDATE NO ACTION\
-              ON DELETE NO ACTION\
+              ON DELETE CASCADE\
         )\
       ').then((result) => resolve(result))
         .catch((error) => reject(error));
@@ -271,20 +305,29 @@ describe('Test database', () => {
                   console.log('    - Inserted data into "users" table successfully');
                   buildPostsTable().then(() => {
                     console.log('  - Built "posts" table successfully');
-                    buildArticlesTable().then(() => {
-                      console.log('  - Built "articles" table successfully');
-                      buildGifsTable().then(() => {
-                        console.log('  - Built "gifs" table successfully');
-                        buildCommentsTable().then(() => {
-                          console.log('  - Built "comments" table successfully');
-                          buildDepartmentManagersTable().then(() => {
-                            console.log('  - Built "department_managers" table successfully');
-                            console.log('Build Completed');
-                            done();
-                          }).catch((error) => console.log('  ** Failed building "department_managers" table', error));
-                        }).catch((error) => console.log('  ** Failed building "comments" table', error));
-                      }).catch((error) => console.log('  ** Failed building "gifs" table', error));
-                    }).catch((error) => console.log('  ** Failed building "articles" table', error));
+                    fillPostsTable().then(() => {
+                      console.log('    - Inserted data into "posts" table successfully');
+                      buildArticlesTable().then(() => {
+                        console.log('  - Built "articles" table successfully');
+                        fillArticlesTable().then(() => {
+                          console.log('    - Inserted data into "articles" table successfully');
+                          buildGifsTable().then(() => {
+                            console.log('  - Built "gifs" table successfully');
+                            fillGifsTable().then(() => {
+                              console.log('    - Inserted data into "gifs" table successfully');
+                              buildCommentsTable().then(() => {
+                                console.log('  - Built "comments" table successfully');
+                                buildDepartmentManagersTable().then(() => {
+                                  console.log('  - Built "department_managers" table successfully');
+                                  console.log('Build Completed');
+                                  done();
+                                }).catch((error) => console.log('  ** Failed building "department_managers" table', error));
+                              }).catch((error) => console.log('  ** Failed building "comments" table', error));
+                            }).catch((error) => console.log('    ** Failed inserting data into "gifs" table', error));
+                          }).catch((error) => console.log('  ** Failed building "gifs" table', error));
+                        }).catch((error) => console.log('    ** Failed inserting data into "articles" table', error));
+                      }).catch((error) => console.log('  ** Failed building "articles" table', error));
+                    }).catch((error) => console.log('    ** Failed inserting data into "posts" table', error));
                   }).catch((error) => console.log('  ** Failed building "posts" table', error));
                 }).catch((error) => console.log('    ** Failed inserting data into "users" table', error));
               }).catch((error) => console.log('  ** Failed building "users" table', error));
