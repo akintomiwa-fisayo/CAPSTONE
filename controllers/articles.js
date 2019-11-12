@@ -101,33 +101,33 @@ exports.modify = (req, res) => {
   };
   const report = validate();
 
-  // Validate request before submitting
+  // Validate request before processing
   if (report.status) {
-    // Verify that article exists
-    db.query('SELECT "post_id" FROM posts WHERE post_id = $1 AND post_author = $2', [req.params.id, req.loggedInUser.user_id]).then(({ rowCount }) => {
-      // console.log('row cound it : ', rowCount);
+    // Update article
+    db.query(`UPDATE articles
+      SET "title" = $1, "article" = $2 
+      FROM posts 
+      WHERE posts.post_id = articles.post_id 
+      AND posts.post_id = $3 
+      AND posts.post_author = $4`, [
+      req.body.title,
+      req.body.article,
+      req.params.id,
+      req.loggedInUser.user_id,
+    ]).then(({ rowCount }) => {
       if (rowCount === 0) {
         res.status(404).json({
           status: 'error',
-          error: 'Article not found!',
+          error: 'Article not found',
         });
       } else {
-        // Update article
-        db.query('UPDATE articles SET  "title" = $1, "article" = $2 WHERE post_id = $3', [req.body.title, req.body.article, req.params.id]).then(() => {
-          res.status(201).json({
-            status: 'success',
-            data: {
-              message: 'Article successfully updated',
-              title: req.body.title,
-              article: req.body.article,
-            },
-          });
-        }).catch((error) => {
-          console.log(error);
-          res.status(500).json({
-            status: 'error',
-            error: 'Sorry, we couldn\'t complete your request please try again',
-          });
+        res.status(201).json({
+          status: 'success',
+          data: {
+            message: 'Article successfully updated',
+            title: req.body.title,
+            article: req.body.article,
+          },
         });
       }
     }).catch((error) => {
@@ -143,4 +143,37 @@ exports.modify = (req, res) => {
       error: report.error,
     });
   }
+};
+
+exports.delete = (req, res) => {
+  // Delete article
+  db.query(`DELETE 
+    FROM posts 
+    WHERE post_id = $1
+    AND post_author = $2
+    AND post_type = $3`, [
+    req.params.id,
+    req.loggedInUser.user_id,
+    'article',
+  ]).then(({ rowCount }) => {
+    if (rowCount === 0) {
+      res.status(404).json({
+        status: 'error',
+        error: 'Article not found',
+      });
+    } else {
+      res.status(200).json({
+        status: 'success',
+        data: {
+          message: 'Article successfully deleted',
+        },
+      });
+    }
+  }).catch((error) => {
+    console.log(error);
+    res.status(500).json({
+      status: 'error',
+      error: 'Sorry, we couldn\'t complete your request please try again',
+    });
+  });
 };
