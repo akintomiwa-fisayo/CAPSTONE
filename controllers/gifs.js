@@ -144,3 +144,36 @@ exports.modify = (req, res) => {
     });
   }
 };
+
+exports.delete = (req, res) => {
+  // Delete gif
+  db.query(`DELETE 
+    FROM posts 
+    WHERE post_id = $1
+    AND post_author = $2
+    AND post_type = $3`, [
+    req.params.id,
+    req.loggedInUser.user_id,
+    'gif',
+  ]).then(({ rowCount }) => {
+    if (rowCount === 0) {
+      res.status(404).json({
+        status: 'error',
+        error: 'Gif not found',
+      });
+    } else {
+      res.status(200).json({
+        status: 'success',
+        data: {
+          message: 'Gif successfully deleted',
+        },
+      });
+    }
+  }).catch((error) => {
+    console.log(error);
+    res.status(500).json({
+      status: 'error',
+      error: 'Sorry, we couldn\'t complete your request please try again',
+    });
+  });
+};
