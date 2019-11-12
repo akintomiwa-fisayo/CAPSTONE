@@ -1,11 +1,8 @@
 /* eslint-disable camelcase */
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const db = require('../dbconn');
 const cloud = require('../middleware/cloudinary');
 const lib = require('../middleware/lib');
-
 
 exports.create = (req, res) => {
   const validate = () => {
@@ -85,6 +82,62 @@ exports.create = (req, res) => {
     if (req.file) {
       fs.unlink(req.file.path, (error) => (error ? console.log('Unable to delete file after upload :', error) : ''));
     }
+    res.status(400).json({
+      status: 'error',
+      error: report.error,
+    });
+  }
+};
+
+exports.modify = (req, res) => {
+  const validate = () => {
+    let test = 'Undefined';
+
+    // Test to validate title
+    if (req.body.title) {
+      req.body.title = req.body.title.toLowerCase();
+      test = lib.isEmpty(req.body.title) ? 'Invalid: can\'t be empty' : 'Valid';
+    }
+    return test === 'Valid' ? { status: true } : { status: false, error: { title: test } };
+  };
+  const report = validate();
+
+  // Validate request before processing
+  if (report.status) {
+    // Update gif
+    db.query(`UPDATE gifs
+      SET "title" = $1 
+      FROM posts 
+      WHERE posts.post_id = gifs.post_id 
+      AND posts.post_id = $2 
+      AND posts.post_author = $3 RETURNING gifs.image_url`, [
+      req.body.title,
+      req.params.id,
+      req.loggedInUser.user_id,
+    ]).then(({ rowCount, rows }) => {
+      if (rowCount === 0) {
+        res.status(404).json({
+          status: 'error',
+          error: 'Gif not found',
+        });
+      } else {
+        res.status(201).json({
+          status: 'success',
+          data: {
+            message: 'Gif successfully updated',
+            title: req.body.title,
+            imageUrl: rows[0].image_url,
+          },
+        });
+      }
+    }).catch((error) => {
+      console.log(error);
+      res.status(500).json({
+        status: 'error',
+        error: 'Sorry, we couldn\'t complete your request please try again',
+      });
+    });
+  } else {
     res.status(400).json({
       status: 'error',
       error: report.error,
