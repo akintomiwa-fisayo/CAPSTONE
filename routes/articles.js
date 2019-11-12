@@ -6,6 +6,6 @@ const authenticate = require('../middleware/authenticate');
 const articlesCtrl = require('../controllers/articles');
 
 router.post('/', authenticate.employee, articlesCtrl.create);
-// router.post('/signin', formParser, authCtrl.signIn);
+router.patch('/:id', authenticate.employee, articlesCtrl.modify);
 
 module.exports = router;
