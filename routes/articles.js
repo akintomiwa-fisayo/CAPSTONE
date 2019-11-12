@@ -7,5 +7,6 @@ const articlesCtrl = require('../controllers/articles');
 
 router.post('/', authenticate.employee, articlesCtrl.create);
 router.patch('/:id', authenticate.employee, articlesCtrl.modify);
+router.delete('/:id', authenticate.employee, articlesCtrl.delete);
 
 module.exports = router;

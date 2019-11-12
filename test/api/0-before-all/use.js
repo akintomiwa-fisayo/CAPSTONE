@@ -76,7 +76,7 @@ describe('Test database', () => {
           CONSTRAINT department_fkey FOREIGN KEY (dept_id)\
             REFERENCES public.departments (dept_id) MATCH SIMPLE\
             ON UPDATE NO ACTION\
-            ON DELETE NO ACTION\
+            ON DELETE CASCADE\
         )\
       ').then((result) => resolve(result))
         .catch((error) => reject(error));
@@ -171,7 +171,7 @@ describe('Test database', () => {
           CONSTRAINT author_fkey FOREIGN KEY (post_author)\
             REFERENCES public.users (user_id) MATCH SIMPLE\
             ON UPDATE NO ACTION\
-            ON DELETE NO ACTION\
+            ON DELETE CASCADE\
         )\
       ').then((result) => resolve(result))
         .catch((error) => reject(error));
@@ -205,7 +205,7 @@ describe('Test database', () => {
           CONSTRAINT "postId_fkey" FOREIGN KEY (post_id)\
             REFERENCES public.posts (post_id) MATCH SIMPLE\
             ON UPDATE NO ACTION\
-            ON DELETE NO ACTION\
+            ON DELETE CASCADE\
         )\
       ').then((result) => resolve(result))
         .catch((error) => reject(error));
@@ -230,7 +230,7 @@ describe('Test database', () => {
           CONSTRAINT "postId_fkey" FOREIGN KEY (post_id)\
             REFERENCES public.posts (post_id) MATCH SIMPLE\
             ON UPDATE NO ACTION\
-            ON DELETE NO ACTION\
+            ON DELETE CASCADE\
         )\
       ').then((result) => resolve(result))
         .catch((error) => reject(error));
@@ -244,7 +244,6 @@ describe('Test database', () => {
         .catch((error) => reject(error));
     });
 
-
     const buildCommentsTable = () => new Promise((resolve, reject) => {
       db.query('\
         CREATE TABLE public.comments (\
@@ -257,11 +256,11 @@ describe('Test database', () => {
           CONSTRAINT "authorId_fkey" FOREIGN KEY (author_id)\
             REFERENCES public.users (user_id) MATCH SIMPLE\
             ON UPDATE NO ACTION\
-            ON DELETE NO ACTION,\
+            ON DELETE CASCADE,\
           CONSTRAINT "postId_fkey" FOREIGN KEY (post_id)\
             REFERENCES public.posts (post_id) MATCH SIMPLE\
             ON UPDATE NO ACTION\
-            ON DELETE NO ACTION\
+            ON DELETE CASCADE\
         )\
       ').then((result) => resolve(result))
         .catch((error) => reject(error));
@@ -278,11 +277,11 @@ describe('Test database', () => {
           CONSTRAINT dept_id FOREIGN KEY (dept_id)\
               REFERENCES public.departments (dept_id) MATCH SIMPLE\
               ON UPDATE NO ACTION\
-              ON DELETE NO ACTION,\
+              ON DELETE CASCADE,\
           CONSTRAINT "userId_fkey" FOREIGN KEY (user_id)\
               REFERENCES public.users (user_id) MATCH SIMPLE\
               ON UPDATE NO ACTION\
-              ON DELETE NO ACTION\
+              ON DELETE CASCADE\
         )\
       ').then((result) => resolve(result))
         .catch((error) => reject(error));
