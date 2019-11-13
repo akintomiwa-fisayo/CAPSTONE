@@ -119,7 +119,6 @@ exports.modify = (req, res) => {
         });
       } else if (rows[0].post_author !== parseInt(req.loggedInUser.user_id, 10)) {
         // Gif is valid but does not belong to Current user
-        console.log('post author is : ', rows[0].post_author, 'user id : ', req.loggedInUser.user_id);
         res.status(401).json({
           status: 'error',
           error: 'Unauthorized to modify this gif',
@@ -132,17 +131,17 @@ exports.modify = (req, res) => {
           FROM posts 
           WHERE posts.post_id = gifs.post_id 
           AND posts.post_id = $2 
-          AND posts.post_author = $3 RETURNING gifs.image_url`, [
+          AND posts.post_author = $3 RETURNING gifs.image_url, gifs.title`, [
           req.body.title,
           req.params.id,
           req.loggedInUser.user_id,
-        ]).then(({ rows: gfRows }) => {
+        ]).then(({ rows: [gif] }) => {
           res.status(201).json({
             status: 'success',
             data: {
               message: 'Gif successfully updated',
-              title: req.body.title,
-              imageUrl: gfRows[0].image_url,
+              title: gif.title,
+              imageUrl: gif.image_url,
             },
           });
         }).catch((error) => {
@@ -198,9 +197,8 @@ exports.comment = (req, res) => {
             error: 'Gif not found',
           });
         } else {
-          const gifTitle = rows[0].title;
-          // res.send(`comment recorded ${gifTitle}`);
           // Insert comment
+          const gifTitle = rows[0].title;
           db.query(`INSERT INTO post_comments (post_id, author_id, comment)
             VALUES ($1, $2, $3) RETURNING created_on`, [
             req.params.id,
