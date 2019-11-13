@@ -246,7 +246,7 @@ describe('Test database', () => {
 
     const buildCommentsTable = () => new Promise((resolve, reject) => {
       db.query('\
-        CREATE TABLE public.comments (\
+        CREATE TABLE public.post_comments (\
           comment_id integer NOT NULL DEFAULT nextval(\'"commentId-increment"\'::regclass),\
           post_id integer NOT NULL,\
           author_id integer NOT NULL,\
@@ -316,13 +316,13 @@ describe('Test database', () => {
                             fillGifsTable().then(() => {
                               console.log('    - Inserted data into "gifs" table successfully');
                               buildCommentsTable().then(() => {
-                                console.log('  - Built "comments" table successfully');
+                                console.log('  - Built "post_comments" table successfully');
                                 buildDepartmentManagersTable().then(() => {
                                   console.log('  - Built "department_managers" table successfully');
                                   console.log('Build Completed');
                                   done();
                                 }).catch((error) => console.log('  ** Failed building "department_managers" table', error));
-                              }).catch((error) => console.log('  ** Failed building "comments" table', error));
+                              }).catch((error) => console.log('  ** Failed building "post_comments" table', error));
                             }).catch((error) => console.log('    ** Failed inserting data into "gifs" table', error));
                           }).catch((error) => console.log('  ** Failed building "gifs" table', error));
                         }).catch((error) => console.log('    ** Failed inserting data into "articles" table', error));

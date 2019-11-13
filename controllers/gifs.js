@@ -104,30 +104,53 @@ exports.modify = (req, res) => {
 
   // Validate request before processing
   if (report.status) {
-    // Update gif
-    db.query(`UPDATE gifs
-      SET "title" = $1 
+    // Verify that Gif exists
+    db.query(`
+      SELECT post_author
       FROM posts 
-      WHERE posts.post_id = gifs.post_id 
-      AND posts.post_id = $2 
-      AND posts.post_author = $3 RETURNING gifs.image_url`, [
-      req.body.title,
-      req.params.id,
-      req.loggedInUser.user_id,
-    ]).then(({ rowCount, rows }) => {
+      WHERE post_id = $1
+      AND post_type = 'gif'
+    `, [req.params.id]).then(({ rows, rowCount }) => {
       if (rowCount === 0) {
+        // Gif does not exist
         res.status(404).json({
           status: 'error',
           error: 'Gif not found',
         });
+      } else if (rows[0].post_author !== parseInt(req.loggedInUser.user_id, 10)) {
+        // Gif is valid but does not belong to Current user
+        console.log('post author is : ', rows[0].post_author, 'user id : ', req.loggedInUser.user_id);
+        res.status(401).json({
+          status: 'error',
+          error: 'Unauthorized to modify this gif',
+        });
       } else {
-        res.status(201).json({
-          status: 'success',
-          data: {
-            message: 'Gif successfully updated',
-            title: req.body.title,
-            imageUrl: rows[0].image_url,
-          },
+        // Gif is valid and belongs to current user
+        // Update gif
+        db.query(`UPDATE gifs
+          SET "title" = $1 
+          FROM posts 
+          WHERE posts.post_id = gifs.post_id 
+          AND posts.post_id = $2 
+          AND posts.post_author = $3 RETURNING gifs.image_url`, [
+          req.body.title,
+          req.params.id,
+          req.loggedInUser.user_id,
+        ]).then(({ rows: gfRows }) => {
+          res.status(201).json({
+            status: 'success',
+            data: {
+              message: 'Gif successfully updated',
+              title: req.body.title,
+              imageUrl: gfRows[0].image_url,
+            },
+          });
+        }).catch((error) => {
+          console.log(error);
+          res.status(500).json({
+            status: 'error',
+            error: 'Sorry, we couldn\'t complete your request please try again',
+          });
         });
       }
     }).catch((error) => {
@@ -145,28 +168,121 @@ exports.modify = (req, res) => {
   }
 };
 
+exports.comment = (req, res) => {
+  const validate = () => {
+    let test = 'Undefined';
+
+    // Test to validate comment
+    if (req.body.comment) {
+      req.body.comment = req.body.comment.toLowerCase();
+      test = lib.isEmpty(req.body.comment) ? 'Invalid: can\'t be empty' : 'Valid';
+    }
+    return test === 'Valid' ? { status: true } : { status: false, error: { comment: test } };
+  };
+  const report = validate();
+
+  // Validate request before processing
+  if (report.status) {
+    // Validate that post exist
+    db.query(`
+      SELECT gifs.title
+      FROM posts 
+      INNER JOIN gifs 
+      ON posts.post_id = gifs.post_id
+      WHERE posts.post_id = $1
+      `, [req.params.id])
+      .then(({ rowCount, rows }) => {
+        if (rowCount === 0) {
+          res.status(404).json({
+            status: 'error',
+            error: 'Gif not found',
+          });
+        } else {
+          const gifTitle = rows[0].title;
+          // res.send(`comment recorded ${gifTitle}`);
+          // Insert comment
+          db.query(`INSERT INTO post_comments (post_id, author_id, comment)
+            VALUES ($1, $2, $3) RETURNING created_on`, [
+            req.params.id,
+            req.loggedInUser.user_id,
+            req.body.comment,
+          ]).then(({ rows: comm_rows }) => {
+            res.status(201).json({
+              status: 'success',
+              data: {
+                message: 'Comment successfully created',
+                createdOn: comm_rows[0].created_on,
+                gifTitle,
+                comment: req.body.comment,
+              },
+            });
+          }).catch((error) => {
+            console.log(error);
+            res.status(500).json({
+              status: 'error',
+              error: 'Sorry, we couldn\'t complete your request please try again',
+            });
+          });
+        }
+      }).catch((error) => {
+        console.log(error);
+        res.status(500).json({
+          status: 'error',
+          error: 'Sorry, we couldn\'t complete your request please try again',
+        });
+      });
+  } else {
+    res.status(400).json({
+      status: 'error',
+      error: report.error,
+    });
+  }
+};
+
 exports.delete = (req, res) => {
-  // Delete gif
-  db.query(`DELETE 
+  // Verify that gif exists
+  db.query(`
+    SELECT post_author
     FROM posts 
     WHERE post_id = $1
-    AND post_author = $2
-    AND post_type = $3`, [
-    req.params.id,
-    req.loggedInUser.user_id,
-    'gif',
-  ]).then(({ rowCount }) => {
+    AND post_type = 'gif'
+  `, [req.params.id]).then(({ rows, rowCount }) => {
     if (rowCount === 0) {
+      // Gif does not exist
       res.status(404).json({
         status: 'error',
         error: 'Gif not found',
       });
+    } else if (rows[0].post_author !== parseInt(req.loggedInUser.user_id, 10)) {
+      // Gif is valid but does not belong to Current user
+      res.status(401).json({
+        status: 'error',
+        error: 'Unauthorized to delete this gif',
+      });
     } else {
-      res.status(200).json({
-        status: 'success',
-        data: {
-          message: 'Gif successfully deleted',
-        },
+      // Gif is valid and belongs to current user
+      // Delete gif and gifs table and post_comment table will cascade
+      db.query(`DELETE 
+        FROM posts 
+        WHERE post_id = $1
+        AND post_author = $2
+        AND post_type = $3`, [
+        req.params.id,
+        req.loggedInUser.user_id,
+        'gif',
+      ]).then(() => {
+        res.status(200).json({
+          status: 'success',
+          data: {
+            message: 'Gif successfully deleted',
+          },
+        });
+      }).catch((error) => {
+        console.log(error);
+        res.status(500).json({
+          status: 'error',
+          error: 'Sorry, we couldn\'t complete your request please try again',
+        });
       });
     }
   }).catch((error) => {

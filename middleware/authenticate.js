@@ -30,7 +30,8 @@ exports.employee = (req, res, next) => {
         error: 'Unauthorized',
       });
     }
-  }).catch(() => {
+  }).catch((error) => {
+    console.log(error);
     res.status(401).json({
       status: 'error',
       error: 'Unauthorized',
