@@ -50,7 +50,7 @@ describe('Test database', () => {
     });
 
     const destroyCommentsTable = () => new Promise((resolve, reject) => {
-      db.query('DROP TABLE public.comments')
+      db.query('DROP TABLE public.post_comments')
         .then((result) => resolve(result))
         .catch((error) => reject(error));
     });
@@ -66,7 +66,7 @@ describe('Test database', () => {
     destroyDepartmentManagersTable().then(() => {
       console.log('  - Destroyed "department_managers" table successfully');
       destroyCommentsTable().then(() => {
-        console.log('  - Destroyed "comments" table successfully');
+        console.log('  - Destroyed "post_comments" table successfully');
         destroyGifsTable().then(() => {
           console.log('  - Destroyed "gifs" table successfully');
           destroyArticlesTable().then(() => {
@@ -91,7 +91,7 @@ describe('Test database', () => {
             }).catch((error) => console.log('  ** Failed destroying "posts" table', error));
           }).catch((error) => console.log('  ** Failed destroying "articles" table', error));
         }).catch((error) => console.log('  ** Failed destroying "gifs" table', error));
-      }).catch((error) => console.log('  ** Failed destroying "comments" table', error));
+      }).catch((error) => console.log('  ** Failed destroying "post_comments" table', error));
     }).catch((error) => console.log('  ** Failed destroying "department_managers" table', error));
   });
 });
