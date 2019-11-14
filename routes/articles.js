@@ -11,6 +11,7 @@ router.patch('/:id', authenticate.employee, articlesCtrl.modify);
 router.delete('/:id', authenticate.employee, articlesCtrl.delete);
 router.post('/:id/flag', authenticate.employee, articlesCtrl.flag);
 router.post('/:id/comment', authenticate.employee, articlesCtrl.comment);
+router.post('/:id/comment/:commentId/flag', authenticate.employee, articlesCtrl.flagComment);
 
 
 module.exports = router;
