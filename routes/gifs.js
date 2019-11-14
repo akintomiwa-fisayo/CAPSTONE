@@ -11,5 +11,6 @@ router.patch('/:id', authenticate.employee, gifsCtrl.modify);
 router.delete('/:id', authenticate.employee, gifsCtrl.delete);
 router.post('/:id/flag', authenticate.employee, gifsCtrl.flag);
 router.post('/:id/comment', authenticate.employee, gifsCtrl.comment);
+router.post('/:id/comment/:commentId/flag', authenticate.employee, gifsCtrl.flagComment);
 
 module.exports = router;

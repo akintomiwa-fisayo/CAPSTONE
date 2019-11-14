@@ -1,7 +1,7 @@
 /* eslint-disable no-multi-str */
 /* eslint-disable no-undef */
 const db = require('../../../dbconn');
-const { users: { user, admin }, posts: { articles, gifs } } = require('../samples');
+const { users: { user, admin }, posts: { articles, gifs }, comments: { gifs: gifsComment, articles: articlesComment } } = require('../samples');
 
 
 describe('Test database', () => {
@@ -191,14 +191,14 @@ describe('Test database', () => {
       INSERT INTO posts ("post_id", "post_type", "post_author")\
       VALUES\
       (\
-        '${articles.post_id}',
-        '${articles.post_type}',
-        '${articles.post_author}'
+        '${articles.postId}',
+        '${articles.postType}',
+        '${articles.postAuthor}'
       ),
       (
-        '${gifs.post_id}',
-        '${gifs.post_type}',
-        '${gifs.post_author}'
+        '${gifs.postId}',
+        '${gifs.postType}',
+        '${gifs.postAuthor}'
       )
     `).then((result) => resolve(result))
         .catch((error) => reject(error));
@@ -223,7 +223,7 @@ describe('Test database', () => {
     const fillArticlesTable = () => new Promise((resolve, reject) => {
       db.query(`\
       INSERT INTO articles ("post_id", "title", "article")\
-      VALUES ( '${articles.post_id}', '${articles.title}', '${articles.article}' )
+      VALUES ( '${articles.postId}', '${articles.title}', '${articles.article}' )
     `).then((result) => resolve(result))
         .catch((error) => reject(error));
     });
@@ -248,7 +248,7 @@ describe('Test database', () => {
     const fillGifsTable = () => new Promise((resolve, reject) => {
       db.query(`\
       INSERT INTO gifs ("post_id", "title", "image_url")\
-      VALUES ( '${gifs.post_id}', '${gifs.title}', '${gifs.imageUrl}' )
+      VALUES ( '${gifs.postId}', '${gifs.title}', '${gifs.imageUrl}' )
     `).then((result) => resolve(result))
         .catch((error) => reject(error));
     });
@@ -272,6 +272,26 @@ describe('Test database', () => {
             ON DELETE CASCADE\
         )\
       ').then((result) => resolve(result))
+        .catch((error) => reject(error));
+    });
+
+    const fillCommentsTable = () => new Promise((resolve, reject) => {
+      db.query(`\
+      INSERT INTO post_comments ("comment_id", "post_id", "author_id", "comment")\
+      VALUES 
+      ( 
+        '${gifsComment.commentId}', 
+        '${gifsComment.postId}', 
+        '${gifsComment.authorId}', 
+        '${gifsComment.comment}' 
+      ),
+      ( 
+        '${articlesComment.commentId}', 
+        '${articlesComment.postId}', 
+        '${articlesComment.authorId}', 
+        '${articlesComment.comment}' 
+      )
+    `).then((result) => resolve(result))
         .catch((error) => reject(error));
     });
 
@@ -346,14 +366,17 @@ describe('Test database', () => {
                               console.log('    - Inserted data into "gifs" table successfully');
                               buildCommentsTable().then(() => {
                                 console.log('  - Built "post_comments" table successfully');
-                                buildPostsAndCommentsFlagsTable().then(() => {
-                                  console.log('  - Built "posts_and_comments_flags" table successfully');
-                                  buildDepartmentManagersTable().then(() => {
-                                    console.log('  - Built "department_managers" table successfully');
-                                    console.log('Build Completed');
-                                    done();
-                                  }).catch((error) => console.log('  ** Failed building "department_managers" table', error));
-                                }).catch((error) => console.log('  ** Failed building "posts_and_comments_flags" table', error));
+                                fillCommentsTable().then(() => {
+                                  console.log('    - Inserted data into "post_comments" table successfully');
+                                  buildPostsAndCommentsFlagsTable().then(() => {
+                                    console.log('  - Built "posts_and_comments_flags" table successfully');
+                                    buildDepartmentManagersTable().then(() => {
+                                      console.log('  - Built "department_managers" table successfully');
+                                      console.log('Build Completed');
+                                      done();
+                                    }).catch((error) => console.log('  ** Failed building "department_managers" table', error));
+                                  }).catch((error) => console.log('  ** Failed building "posts_and_comments_flags" table', error));
+                                }).catch((error) => console.log('    ** Failed inserting data into "post_comments" table', error));
                               }).catch((error) => console.log('  ** Failed building "post_comments" table', error));
                             }).catch((error) => console.log('    ** Failed inserting data into "gifs" table', error));
                           }).catch((error) => console.log('  ** Failed building "gifs" table', error));

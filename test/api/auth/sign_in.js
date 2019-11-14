@@ -10,7 +10,7 @@ describe('POST /auth/signin', () => {
   it('Should sign user in', (done) => {
     request(app).post('/auth/signin')
       .set('Content-Type', 'application/json')
-      .send({ password: user.password_text, email: user.email })
+      .send({ password: user.passwordText, email: user.email })
       .then((res) => {
         const { body, status } = res;
         expect(status).to.equal(200);

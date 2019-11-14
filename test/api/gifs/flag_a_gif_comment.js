@@ -2,11 +2,11 @@
 const { expect } = require('chai');
 const request = require('supertest');
 const app = require('../../../app');
-const { users: { user }, posts: { articles } } = require('../samples');
+const { users: { user }, posts: { gifs }, comments: { gifs: gifsComment } } = require('../samples');
 
-describe('POST /articles/:id/flag', () => {
-  it('Should flag an article', (done) => {
-    request(app).post(`/articles/${articles.postId}/flag`)
+describe('POST /gifs/:id/comment/:commentId/flag', () => {
+  it('Should flag a gif comment', (done) => {
+    request(app).post(`/gifs/${gifs.postId}/comment/${gifsComment.commentId}/flag`)
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${user.token}`)
       .send({

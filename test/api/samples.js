@@ -6,7 +6,7 @@ const user = {
   lastName: 'name',
   email: 'user@gmail.com',
   password: '$2b$10$NJKkups9jG6D4ZV7s8y7tOtvtuR5jgtPA6xuJgGzx2Xf3rnrNOIky',
-  password_text: 'password',
+  passwordText: 'password',
   gender: 'male',
   jobRole: 'j1003',
   department: 'd1002',
@@ -19,6 +19,7 @@ const user = {
     expiresIn: '24h',
   }),
 };
+
 
 // //////////////////////////////////////////////////////////////////////
 exports.users = {
@@ -40,18 +41,33 @@ exports.users = {
 
 exports.posts = {
   articles: {
-    post_id: 10001,
-    post_type: 'article',
-    post_author: user.id,
+    postId: 10001,
+    postType: 'article',
+    postAuthor: user.id,
     title: 'sample title',
     article: 'sample lorem article',
   },
   gifs: {
-    post_id: 10002,
-    post_type: 'gif',
-    post_author: user.id,
+    postId: 10002,
+    postType: 'gif',
+    postAuthor: user.id,
     title: 'sample title',
     imageUrl: 'https://res.cloudinary.com/capstone-backend/image/upload/v1573444709/yi7iws2r2jwbimlhlrmd.gif',
 
+  },
+};
+
+exports.comments = {
+  articles: {
+    commentId: 10001,
+    postId: exports.posts.articles.postId,
+    authorId: user.id,
+    comment: 'article comment content',
+  },
+  gifs: {
+    commentId: 10002,
+    postId: exports.posts.gifs.postId,
+    authorId: user.id,
+    comment: 'gif comment content',
   },
 };

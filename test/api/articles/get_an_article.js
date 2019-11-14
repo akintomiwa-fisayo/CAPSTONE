@@ -6,7 +6,7 @@ const { users: { user }, posts: { articles } } = require('../samples');
 
 describe('GET /articles/:id', () => {
   it('Should get an article', (done) => {
-    request(app).get(`/articles/${articles.post_id}`)
+    request(app).get(`/articles/${articles.postId}`)
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${user.token}`)
       .send()
