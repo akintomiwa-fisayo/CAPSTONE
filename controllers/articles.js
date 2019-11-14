@@ -201,19 +201,20 @@ exports.comment = (req, res) => {
           // Insert comment
           const article = rows[0];
           db.query(`INSERT INTO post_comments (post_id, author_id, comment)
-            VALUES ($1, $2, $3) RETURNING created_on`, [
+            VALUES ($1, $2, $3) RETURNING created_on, comment_id`, [
             req.params.id,
             req.loggedInUser.user_id,
             req.body.comment,
-          ]).then(({ rows: comm_rows }) => {
+          ]).then(({ rows: [comm] }) => {
             res.status(201).json({
               status: 'success',
               data: {
                 message: 'Comment successfully created',
-                createdOn: comm_rows[0].created_on,
+                createdOn: comm.created_on,
                 articleTitle: article.title,
                 article: article.article,
                 comment: req.body.comment,
+                commentId: comm.comment_id,
               },
             });
           }).catch((error) => {

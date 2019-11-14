@@ -1,7 +1,7 @@
 /* eslint-disable no-multi-str */
 /* eslint-disable no-undef */
 const db = require('../../../dbconn');
-const { users: { user, admin }, posts: { articles, gifs } } = require('../../samples');
+const { users: { user, admin }, posts: { articles, gifs } } = require('../samples');
 
 
 describe('Test database', () => {

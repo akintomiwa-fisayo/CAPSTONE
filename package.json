@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "nodemon server.js",
-    "test": "set NODE_ENV=test&&mocha --recursive --exist"
+    "test": "set NODE_ENV=test&&mocha --exist"
   },
   "author": "",
   "license": "ISC",

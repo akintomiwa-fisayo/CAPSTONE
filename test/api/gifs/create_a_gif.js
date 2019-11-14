@@ -5,7 +5,7 @@ const request = require('supertest');
 const fs = require('fs');
 const path = require('path');
 const app = require('../../../app');
-const { users: { user } } = require('../../samples');
+const { users: { user } } = require('../samples');
 
 describe('POST /gifs', () => {
   let sampleGif = false;
@@ -26,7 +26,7 @@ describe('POST /gifs', () => {
     request(app).post('/gifs')
       .set('Content-Type', 'application/x-www-form-urlencoded')
       .set('Authorization', `Bearer ${user.token}`)
-      .field('title', 'post title')
+      .field('title', 'gif post title')
       .attach('image', sampleGif, 'image.gif')
       .then((res) => {
         const { body, status } = res;
