@@ -300,6 +300,96 @@ exports.comment = (req, res) => {
   }
 };
 
+exports.flag = (req, res) => {
+  const validate = () => {
+    let isValid = true;
+    const test = {};
+
+    // Test to validate flag
+    if (req.body.flag) {
+      req.body.flag = req.body.flag.toLowerCase();
+      test.flag = ['inappropriate', 'abusive', 'bullying', 'scam', 'misleading'].indexOf(req.body.flag) === -1 ? 'Invalid: Unacceptable' : 'Valid';
+    } else test.flag = 'Undefined';
+
+    // Test to validate reason
+    if (req.body.reason) {
+      req.body.reason = req.body.reason.toLowerCase();
+      test.reason = lib.isEmpty(req.body.reason) ? 'Invalid: can\'t be empty' : 'Valid';
+    } else test.reason = 'Undefined';
+
+    const error = {};
+    Object.keys(test).forEach((key) => {
+      if (test[key] !== 'Valid') {
+        error[key] = test[key];
+        if (isValid) isValid = false;
+      }
+    });
+
+    return isValid ? { status: true } : { status: false, error };
+  };
+  const report = validate();
+
+  // Validate request before submitting
+  if (report.status) {
+    // Validate that article post exist
+    db.query(`
+      SELECT articles.post_id
+      FROM posts 
+      INNER JOIN articles 
+      ON posts.post_id = articles.post_id
+      WHERE posts.post_id = $1
+    `, [req.params.id])
+      .then(({ rowCount }) => {
+        if (rowCount === 0) {
+          res.status(404).json({
+            status: 'error',
+            error: 'Article not found',
+          });
+        } else {
+          db.query(`INSERT INTO 
+            posts_and_comments_flags ("content_type", "content_id", "flag", "reason", "flagged_by") 
+            VALUES ($1, $2, $3, $4, $5) RETURNING "flagged_on", "flag_id"`, [
+            'article',
+            req.params.id,
+            req.body.flag,
+            req.body.reason,
+            req.loggedInUser.user_id,
+          ]).then(({ rows: [{ flagged_on: flaggedOn, flag_id: flagId }] }) => {
+            res.status(201).json({
+              status: 'success',
+              data: {
+                message: 'Report successfully created',
+                flagId,
+                contentType: 'article',
+                contentId: parseInt(req.params.id, 10),
+                flagAs: req.body.flag,
+                flagReason: req.body.reason,
+                flaggedOn,
+              },
+            });
+          }).catch((error) => {
+            console.log(error);
+            res.status(500).json({
+              status: 'error',
+              error: 'Sorry, we couldn\'t complete your request please try again',
+            });
+          });
+        }
+      }).catch((error) => {
+        console.log(error);
+        res.status(500).json({
+          status: 'error',
+          error: 'Sorry, we couldn\'t complete your request please try again',
+        });
+      });
+  } else {
+    res.status(400).json({
+      status: 'error',
+      error: report.error,
+    });
+  }
+};
+
 exports.delete = (req, res) => {
   // Delete article
   db.query(`DELETE 
