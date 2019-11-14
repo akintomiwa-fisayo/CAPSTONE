@@ -41,5 +41,5 @@ describe('POST /gifs', () => {
         done();
       })
       .catch((error) => done(error));
-  }).timeout(30000);
+  }).timeout(6000);
 });

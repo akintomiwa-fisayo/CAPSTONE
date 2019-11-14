@@ -3,6 +3,7 @@ require('./api/auth/create_user');
 require('./api/auth/sign_in');
 require('./api/gifs/create_a_gif');
 require('./api/gifs/edit_a_gif');
+require('./api/gifs/get_a_gif');
 require('./api/gifs/comment_on_a_gif');
 require('./api/articles/create_an_article');
 require('./api/articles/edit_an_article');
