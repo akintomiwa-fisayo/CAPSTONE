@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "nodemon server.js",
-    "test": "set NODE_ENV=test&&mocha --exist"
+    "test": "set NODE_ENV=test&&mocha --exist",
+    "coverage": "npm run test && jest --coverage && cat ./coverage/lcov.info | coveralls"
   },
   "author": "",
   "license": "ISC",

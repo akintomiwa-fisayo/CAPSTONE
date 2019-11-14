@@ -6,6 +6,7 @@ require('./api/gifs/edit_a_gif');
 require('./api/gifs/comment_on_a_gif');
 require('./api/articles/create_an_article');
 require('./api/articles/edit_an_article');
+require('./api/articles/get_an_article');
 require('./api/articles/comment_on_an_article');
 require('./api/get_all_posts');
 require('./api/gifs/delete_a_gif');
