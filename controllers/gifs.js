@@ -167,6 +167,67 @@ exports.modify = (req, res) => {
   }
 };
 
+exports.getOne = (req, res) => {
+  // Validate that post exist
+  db.query(`
+      SELECT *
+      FROM posts 
+      INNER JOIN gifs 
+      ON posts.post_id = gifs.post_id
+      WHERE posts.post_id = $1
+      `, [req.params.id])
+    .then(({ rowCount, rows }) => {
+      if (rowCount === 0) {
+        res.status(404).json({
+          status: 'error',
+          error: 'Gif not found',
+        });
+      } else {
+        // Get comments
+        const gif = rows[0];
+        db.query(`
+          SELECT comm.comment_id, comm.author_id, comm.comment
+          FROM posts 
+          INNER JOIN post_comments comm
+          ON posts.post_id = comm.post_id
+          WHERE posts.post_id = $1
+          `, [req.params.id]).then(({ rows: comm }) => {
+          const comments = [];
+          for (let i = 0; i < comm.length; i++) {
+            comments.push({
+              commentId: comm[i].comment_id,
+              comment: comm[i].comment,
+              authorId: comm[i].author_id,
+            });
+          }
+          res.status(200).json({
+            status: 'success',
+            data: {
+              id: gif.post_id,
+              createdOn: gif.created_on,
+              title: gif.title,
+              url: gif.image_url,
+              comments,
+            },
+          });
+        }).catch((error) => {
+          console.log(error);
+          res.status(500).json({
+            status: 'error',
+            error: 'Sorry, we couldn\'t complete your request please try again',
+          });
+        });
+      }
+    }).catch((error) => {
+      console.log(error);
+      res.status(500).json({
+        status: 'error',
+        error: 'Sorry, we couldn\'t complete your request please try again',
+      });
+    });
+};
+
+
 exports.comment = (req, res) => {
   const validate = () => {
     let test = 'Undefined';
