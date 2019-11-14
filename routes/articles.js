@@ -9,6 +9,7 @@ router.post('/', authenticate.employee, articlesCtrl.create);
 router.get('/:id', authenticate.employee, articlesCtrl.getOne);
 router.patch('/:id', authenticate.employee, articlesCtrl.modify);
 router.delete('/:id', authenticate.employee, articlesCtrl.delete);
+router.post('/:id/flag', authenticate.employee, articlesCtrl.flag);
 router.post('/:id/comment', authenticate.employee, articlesCtrl.comment);
 
 
