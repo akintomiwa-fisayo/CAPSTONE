@@ -4,15 +4,15 @@ const { expect } = require('chai');
 const request = require('supertest');
 const fs = require('fs');
 const path = require('path');
-const app = require('../../../../app');
-const { users: { user, admin } } = require('../../../samples');
+const app = require('../../../app');
+const { users: { user, admin } } = require('../samples');
 
 describe('POST /auth/create-user', () => {
   let sampleImage;
 
   before((done) => {
     console.log('Reading sample image...');
-    fs.readFile(path.resolve(__dirname, '../../../../samples/image.jpg'), (err, data) => {
+    fs.readFile(path.resolve(__dirname, '../../../samples/image.jpg'), (err, data) => {
       if (err) {
         throw new Error("Couldn't read sample image");
       } else {
@@ -60,7 +60,7 @@ describe('POST /auth/create-user', () => {
       .field('password', '12345678')
       .field('address', 'noo 30 street')
       .field('email', 'test2@gmail.com')
-      .attach('passport', fs.readFileSync(path.resolve(__dirname, '../../../../samples/image.jpg')), 'image.jpg')
+      .attach('passport', fs.readFileSync(path.resolve(__dirname, '../../../samples/image.jpg')), 'image.jpg')
       .then((res) => {
         const { body } = res;
         expect(body).to.contain.property('status').to.equal('error');

@@ -5,8 +5,9 @@ const bodyParser = require('body-parser');
 const db = require('./dbconn');
 // Import routes
 const authRoutes = require('./routes/auth');
-const articlesRoutes = require('./routes/articles');
 const gifsRoutes = require('./routes/gifs');
+const feedRoutes = require('./routes/feed');
+const articlesRoutes = require('./routes/articles');
 // Initialize app
 const app = express();
 
@@ -43,11 +44,12 @@ app.use((req, res, next) => {
 app.use('/auth', authRoutes);
 app.use('/gifs', gifsRoutes);
 app.use('/articles', articlesRoutes);
+app.use('/feed', feedRoutes);
 
 // Handle error
 app.use((req, res, next) => {
   // If this middleware is executed then endpoint requested for wasn't expected
-  const error = new Error('Not found');
+  const error = new Error('Resource not found');
   error.status = 404;
   next(error);
 });

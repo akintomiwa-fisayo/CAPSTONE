@@ -2,8 +2,8 @@
 /* eslint-disable no-undef */
 const { expect } = require('chai');
 const request = require('supertest');
-const app = require('../../../../app');
-const { users: { user } } = require('../../../samples');
+const app = require('../../../app');
+const { users: { user } } = require('../samples');
 
 
 describe('POST /auth/signin', () => {

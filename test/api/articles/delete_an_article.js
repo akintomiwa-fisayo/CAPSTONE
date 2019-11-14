@@ -1,12 +1,12 @@
 /* eslint-disable no-undef */
 const { expect } = require('chai');
 const request = require('supertest');
-const app = require('../../../../app');
-const { users: { user }, posts: { gifs } } = require('../../../samples');
+const app = require('../../../app');
+const { users: { user }, posts: { articles } } = require('../samples');
 
-describe('DELETE /gifs/:id', () => {
-  it('Should delete a gif', (done) => {
-    request(app).delete(`/gifs/${gifs.post_id}`)
+describe('DELETE /articles/:id', () => {
+  it('Should delete an article', (done) => {
+    request(app).delete(`/articles/${articles.post_id}`)
       .set('Authorization', `Bearer ${user.token}`)
       .send()
       .then((res) => {
