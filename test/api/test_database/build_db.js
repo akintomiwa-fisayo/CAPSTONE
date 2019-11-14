@@ -26,6 +26,15 @@ describe('Test database', () => {
         ALTER SEQUENCE "postId-increment"\
           OWNER TO ${process.env.DB_USER};\
         \
+        CREATE SEQUENCE public."flagId-increment"\
+          INCREMENT 1\
+          START 1\
+          MINVALUE 1\
+          MAXVALUE 99999999999999\
+          CACHE 1;\
+        ALTER SEQUENCE "flagId-increment"\
+          OWNER TO ${process.env.DB_USER};\
+        \
         CREATE SEQUENCE public."userId-increment"\
           INCREMENT 1\
           START 1000\
@@ -266,6 +275,26 @@ describe('Test database', () => {
         .catch((error) => reject(error));
     });
 
+    const buildPostsAndCommentsFlagsTable = () => new Promise((resolve, reject) => {
+      db.query(`
+        CREATE TABLE public.posts_and_comments_flags (
+          content_type text COLLATE pg_catalog."default" NOT NULL,
+          content_id integer NOT NULL,
+          flag text COLLATE pg_catalog."default" NOT NULL,
+          reason text COLLATE pg_catalog."default" NOT NULL,
+          flagged_by integer NOT NULL,
+          flagged_on timestamp with time zone NOT NULL DEFAULT timezone('utc'::text, now()),
+          flag_id integer NOT NULL DEFAULT nextval('"flagId-increment"'::regclass),
+          CONSTRAINT posts_and_comments_flags_pkey PRIMARY KEY (flag_id),
+          CONSTRAINT flagged_by_fkey FOREIGN KEY (flagged_by)
+              REFERENCES public.users (user_id) MATCH SIMPLE
+              ON UPDATE NO ACTION
+              ON DELETE NO ACTION
+        )
+      `).then((result) => resolve(result))
+        .catch((error) => reject(error));
+    });
+
     const buildDepartmentManagersTable = () => new Promise((resolve, reject) => {
       db.query('\
         CREATE TABLE public.department_managers (\
@@ -317,11 +346,14 @@ describe('Test database', () => {
                               console.log('    - Inserted data into "gifs" table successfully');
                               buildCommentsTable().then(() => {
                                 console.log('  - Built "post_comments" table successfully');
-                                buildDepartmentManagersTable().then(() => {
-                                  console.log('  - Built "department_managers" table successfully');
-                                  console.log('Build Completed');
-                                  done();
-                                }).catch((error) => console.log('  ** Failed building "department_managers" table', error));
+                                buildPostsAndCommentsFlagsTable().then(() => {
+                                  console.log('  - Built "posts_and_comments_flags" table successfully');
+                                  buildDepartmentManagersTable().then(() => {
+                                    console.log('  - Built "department_managers" table successfully');
+                                    console.log('Build Completed');
+                                    done();
+                                  }).catch((error) => console.log('  ** Failed building "department_managers" table', error));
+                                }).catch((error) => console.log('  ** Failed building "posts_and_comments_flags" table', error));
                               }).catch((error) => console.log('  ** Failed building "post_comments" table', error));
                             }).catch((error) => console.log('    ** Failed inserting data into "gifs" table', error));
                           }).catch((error) => console.log('  ** Failed building "gifs" table', error));
