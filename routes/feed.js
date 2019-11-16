@@ -68,7 +68,10 @@ router.get('/', authenticate.employee, (req, res) => {
     }
   }).catch((error) => {
     console.log(error);
-    res.send('we going to send the feed');
+    res.status(500).json({
+      status: 'error',
+      error: 'Sorry, we couldn\'t complete your request please try again',
+    });
   });
 });
 

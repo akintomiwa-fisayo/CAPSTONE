@@ -14,7 +14,7 @@ exports.parseUser = (req) => new Promise((resolve, reject) => {
       .then(({ rowCount, rows }) => resolve(rowCount > 0 ? rows[0] : false))
       .catch((error) => reject(error));
   } catch (error) {
-    reject(error);
+    reject(error.name !== 'JsonWebTokenError' ? error : false);
   }
 });
 
@@ -31,7 +31,7 @@ exports.employee = (req, res, next) => {
       });
     }
   }).catch((error) => {
-    console.log(error);
+    if (error) console.log(error);
     res.status(401).json({
       status: 'error',
       error: 'Unauthorized',
@@ -62,7 +62,7 @@ exports.admin = (req, res, next) => {
       });
     } else throw new Error('User was not found');
   }).catch((error) => {
-    console.log(error);
+    if (error) console.log(error);
     res.status(401).json({
       status: 'error',
       error: 'Unauthorized',
