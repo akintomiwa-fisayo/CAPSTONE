@@ -18,4 +18,5 @@ require('./api/reports/get_all_reports');
 require('./api/reports/attend_to_a_report');
 require('./api/gifs/delete_a_gif');
 require('./api/articles/delete_an_article');
+require('./api/auth/change_password');
 require('./api/test_database/destroy_db');

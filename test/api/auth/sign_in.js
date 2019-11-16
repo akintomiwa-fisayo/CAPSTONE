@@ -18,6 +18,15 @@ describe('POST /auth/signin', () => {
         expect(body).to.contain.property('data');
         expect(body.data).to.contain.property('token');
         expect(body.data).to.contain.property('userId');
+        expect(body.data).to.contain.property('firstName');
+        expect(body.data).to.contain.property('lastName');
+        expect(body.data).to.contain.property('email');
+        expect(body.data).to.contain.property('gender');
+        expect(body.data).to.contain.property('jobRole');
+        expect(body.data).to.contain.property('department');
+        expect(body.data).to.contain.property('address');
+        expect(body.data).to.contain.property('passportUrl');
+        expect(body.data).to.contain.property('hiredOn');
         done();
       })
       .catch((error) => done(error));
