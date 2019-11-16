@@ -14,6 +14,7 @@ require('./api/articles/comment_on_an_article');
 require('./api/articles/flag_an_article');
 require('./api/articles/flag_an_article_comment');
 require('./api/get_all_posts');
+require('./api/reports/get_all_reports');
 require('./api/gifs/delete_a_gif');
 require('./api/articles/delete_an_article');
 require('./api/test_database/destroy_db');

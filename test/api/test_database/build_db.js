@@ -26,13 +26,13 @@ describe('Test database', () => {
         ALTER SEQUENCE "postId-increment"\
           OWNER TO ${process.env.DB_USER};\
         \
-        CREATE SEQUENCE public."flagId-increment"\
+        CREATE SEQUENCE public."reportId-increment"\
           INCREMENT 1\
           START 1\
           MINVALUE 1\
           MAXVALUE 99999999999999\
           CACHE 1;\
-        ALTER SEQUENCE "flagId-increment"\
+        ALTER SEQUENCE "reportId-increment"\
           OWNER TO ${process.env.DB_USER};\
         \
         CREATE SEQUENCE public."userId-increment"\
@@ -302,11 +302,11 @@ describe('Test database', () => {
           content_id integer NOT NULL,
           flag text COLLATE pg_catalog."default" NOT NULL,
           reason text COLLATE pg_catalog."default" NOT NULL,
-          flagged_by integer NOT NULL,
-          flagged_on timestamp with time zone NOT NULL DEFAULT timezone('utc'::text, now()),
-          flag_id integer NOT NULL DEFAULT nextval('"flagId-increment"'::regclass),
-          CONSTRAINT posts_and_comments_flags_pkey PRIMARY KEY (flag_id),
-          CONSTRAINT flagged_by_fkey FOREIGN KEY (flagged_by)
+          reporter integer NOT NULL,
+          reported_on timestamp with time zone NOT NULL DEFAULT timezone('utc'::text, now()),
+          report_id integer NOT NULL DEFAULT nextval('"reportId-increment"'::regclass),
+          CONSTRAINT posts_and_comments_flags_pkey PRIMARY KEY (report_id),
+          CONSTRAINT reporter_fkey FOREIGN KEY (reporter)
               REFERENCES public.users (user_id) MATCH SIMPLE
               ON UPDATE NO ACTION
               ON DELETE NO ACTION

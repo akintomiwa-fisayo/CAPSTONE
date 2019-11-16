@@ -273,24 +273,24 @@ exports.flag = (req, res) => {
           });
         } else {
           db.query(`INSERT INTO 
-            posts_and_comments_flags ("content_type", "content_id", "flag", "reason", "flagged_by") 
-            VALUES ($1, $2, $3, $4, $5) RETURNING "flagged_on", "flag_id"`, [
+            posts_and_comments_flags ("content_type", "content_id", "flag", "reason", "reporter") 
+            VALUES ($1, $2, $3, $4, $5) RETURNING "reported_on", "report_id"`, [
             'gif',
             req.params.id,
             req.body.flag,
             req.body.reason,
             req.loggedInUser.user_id,
-          ]).then(({ rows: [{ flagged_on: flaggedOn, flag_id: flagId }] }) => {
+          ]).then(({ rows: [{ reported_on: reportedOn, report_id: reportId }] }) => {
             res.status(201).json({
               status: 'success',
               data: {
                 message: 'Report successfully created',
-                flagId,
+                reportId,
                 contentType: 'gif',
                 contentId: parseInt(req.params.id, 10),
-                flagAs: req.body.flag,
-                flagReason: req.body.reason,
-                flaggedOn,
+                flag: req.body.flag,
+                reason: req.body.reason,
+                reportedOn,
               },
             });
           }).catch((error) => {
@@ -452,24 +452,24 @@ exports.flagComment = (req, res) => {
                 });
               } else {
                 db.query(`INSERT INTO 
-                posts_and_comments_flags ("content_type", "content_id", "flag", "reason", "flagged_by") 
-                VALUES ($1, $2, $3, $4, $5) RETURNING "flagged_on", "flag_id"`, [
+                posts_and_comments_flags ("content_type", "content_id", "flag", "reason", "reporter") 
+                VALUES ($1, $2, $3, $4, $5) RETURNING "reported_on", "report_id"`, [
                   'comment',
                   req.params.commentId,
                   req.body.flag,
                   req.body.reason,
                   req.loggedInUser.user_id,
-                ]).then(({ rows: [{ flagged_on: flaggedOn, flag_id: flagId }] }) => {
+                ]).then(({ rows: [{ reported_on: reportedOn, report_id: reportId }] }) => {
                   res.status(201).json({
                     status: 'success',
                     data: {
                       message: 'Report successfully created',
-                      flagId,
+                      reportId,
                       contentType: 'comment',
                       contentId: parseInt(req.params.commentId, 10),
-                      flagAs: req.body.flag,
-                      flagReason: req.body.reason,
-                      flaggedOn,
+                      flag: req.body.flag,
+                      reason: req.body.reason,
+                      reportedOn,
                     },
                   });
                 }).catch((error) => {

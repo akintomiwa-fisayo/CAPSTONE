@@ -8,6 +8,7 @@ const authRoutes = require('./routes/auth');
 const gifsRoutes = require('./routes/gifs');
 const feedRoutes = require('./routes/feed');
 const articlesRoutes = require('./routes/articles');
+const reportsRoutes = require('./routes/reports');
 // Initialize app
 const app = express();
 
@@ -39,12 +40,12 @@ app.use((req, res, next) => {
   });
 });
 
-
 // Route requests to specific URI
 app.use('/auth', authRoutes);
 app.use('/gifs', gifsRoutes);
 app.use('/articles', articlesRoutes);
 app.use('/feed', feedRoutes);
+app.use('/reports', reportsRoutes);
 
 // Handle error
 app.use((req, res, next) => {

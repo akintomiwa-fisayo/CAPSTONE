@@ -9,7 +9,7 @@ describe('Test database', () => {
         DROP SEQUENCE public."commentId-increment";\
         DROP SEQUENCE public."postId-increment";\
         DROP SEQUENCE public."userId-increment";\
-        DROP SEQUENCE public."flagId-increment";\
+        DROP SEQUENCE public."reportId-increment";\
       ').then((result) => resolve(result))
         .catch((error) => reject(error));
     });
