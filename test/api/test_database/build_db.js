@@ -1,7 +1,15 @@
 /* eslint-disable no-multi-str */
 /* eslint-disable no-undef */
 const db = require('../../../dbconn');
-const { users: { user, admin }, posts: { articles, gifs }, comments: { gifs: gifsComment, articles: articlesComment } } = require('../samples');
+const {
+  users: { user, admin },
+  posts: { articles, gifs },
+  comments: {
+    gifs: gifsComment,
+    articles: articlesComment,
+  },
+  reportsComp,
+} = require('../samples');
 
 
 describe('Test database', () => {
@@ -199,6 +207,11 @@ describe('Test database', () => {
         '${gifs.postId}',
         '${gifs.postType}',
         '${gifs.postAuthor}'
+      ),
+      (
+        '${reportsComp.posts.postId}',
+        '${reportsComp.posts.postType}',
+        '${reportsComp.posts.postAuthor}'
       )
     `).then((result) => resolve(result))
         .catch((error) => reject(error));
@@ -223,7 +236,17 @@ describe('Test database', () => {
     const fillArticlesTable = () => new Promise((resolve, reject) => {
       db.query(`\
       INSERT INTO articles ("post_id", "title", "article")\
-      VALUES ( '${articles.postId}', '${articles.title}', '${articles.article}' )
+      VALUES 
+      ( 
+        '${articles.postId}', 
+        '${articles.title}', 
+        '${articles.article}' 
+      ),
+      ( 
+        '${reportsComp.posts.postId}', 
+        '${reportsComp.posts.title}', 
+        '${reportsComp.posts.article}' 
+      )
     `).then((result) => resolve(result))
         .catch((error) => reject(error));
     });
@@ -277,21 +300,27 @@ describe('Test database', () => {
 
     const fillCommentsTable = () => new Promise((resolve, reject) => {
       db.query(`\
-      INSERT INTO post_comments ("comment_id", "post_id", "author_id", "comment")\
-      VALUES 
-      ( 
-        '${gifsComment.commentId}', 
-        '${gifsComment.postId}', 
-        '${gifsComment.authorId}', 
-        '${gifsComment.comment}' 
-      ),
-      ( 
-        '${articlesComment.commentId}', 
-        '${articlesComment.postId}', 
-        '${articlesComment.authorId}', 
-        '${articlesComment.comment}' 
-      )
-    `).then((result) => resolve(result))
+        INSERT INTO post_comments ("comment_id", "post_id", "author_id", "comment")\
+        VALUES 
+        ( 
+          '${gifsComment.commentId}', 
+          '${gifsComment.postId}', 
+          '${gifsComment.authorId}', 
+          '${gifsComment.comment}' 
+        ),
+        ( 
+          '${articlesComment.commentId}', 
+          '${articlesComment.postId}', 
+          '${articlesComment.authorId}', 
+          '${articlesComment.comment}' 
+        ),
+        ( 
+          '${reportsComp.comments.commentId}', 
+          '${reportsComp.comments.postId}', 
+          '${reportsComp.comments.authorId}', 
+          '${reportsComp.comments.comment}' 
+        )
+      `).then((result) => resolve(result))
         .catch((error) => reject(error));
     });
 
@@ -311,6 +340,30 @@ describe('Test database', () => {
               ON UPDATE NO ACTION
               ON DELETE NO ACTION
         )
+      `).then((result) => resolve(result))
+        .catch((error) => reject(error));
+    });
+
+    const fillPostsAndCommentsFlagsTable = () => new Promise((resolve, reject) => {
+      db.query(`\
+        INSERT INTO posts_and_comments_flags ("content_type", "content_id", "flag", "reason", "reporter", "report_id")\
+        VALUES 
+        ( 
+          '${reportsComp.reports.posts.contentType}', 
+          '${reportsComp.reports.posts.contentId}', 
+          '${reportsComp.reports.posts.flag}', 
+          '${reportsComp.reports.posts.reason}', 
+          '${reportsComp.reports.posts.reporter}', 
+          '${reportsComp.reports.posts.reportId}'
+        ),
+        ( 
+          '${reportsComp.reports.comments.contentType}', 
+          '${reportsComp.reports.comments.contentId}', 
+          '${reportsComp.reports.comments.flag}', 
+          '${reportsComp.reports.comments.reason}', 
+          '${reportsComp.reports.comments.reporter}', 
+          '${reportsComp.reports.comments.reportId}'
+        )       
       `).then((result) => resolve(result))
         .catch((error) => reject(error));
     });
@@ -370,11 +423,14 @@ describe('Test database', () => {
                                   console.log('    - Inserted data into "post_comments" table successfully');
                                   buildPostsAndCommentsFlagsTable().then(() => {
                                     console.log('  - Built "posts_and_comments_flags" table successfully');
-                                    buildDepartmentManagersTable().then(() => {
-                                      console.log('  - Built "department_managers" table successfully');
-                                      console.log('Build Completed');
-                                      done();
-                                    }).catch((error) => console.log('  ** Failed building "department_managers" table', error));
+                                    fillPostsAndCommentsFlagsTable().then(() => {
+                                      console.log('    - Inserted data into "posts_and_comments_flags" table successfully');
+                                      buildDepartmentManagersTable().then(() => {
+                                        console.log('  - Built "department_managers" table successfully');
+                                        console.log('Build Completed');
+                                        done();
+                                      }).catch((error) => console.log('  ** Failed building "department_managers" table', error));
+                                    }).catch((error) => console.log('    ** Failed inserting data into "posts_and_comments_flags" table', error));
                                   }).catch((error) => console.log('  ** Failed building "posts_and_comments_flags" table', error));
                                 }).catch((error) => console.log('    ** Failed inserting data into "post_comments" table', error));
                               }).catch((error) => console.log('  ** Failed building "post_comments" table', error));
