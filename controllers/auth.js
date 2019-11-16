@@ -116,7 +116,6 @@ exports.createUser = (req, res) => {
           });
 
           db.query('UPDATE users SET "token"=$1 WHERE "user_id"=$2', [token, userId]).then(() => {
-            console.log('User account successfully created');
             res.status(201).json({
               status: 'success',
               data: {
@@ -159,7 +158,7 @@ exports.createUser = (req, res) => {
 
 exports.signIn = (req, res) => {
   if (req.body.email && req.body.password) {
-    db.query('SELECT token, user_id, password FROM users WHERE "email"=$1', [req.body.email]).then(({ rowCount, rows }) => {
+    db.query('SELECT * FROM users WHERE "email"=$1', [req.body.email]).then(({ rowCount, rows }) => {
       if (rowCount > 0) {
         const user = rows[0];
         bcrypt.compare(req.body.password, user.password).then((valid) => {
@@ -177,6 +176,15 @@ exports.signIn = (req, res) => {
                 data: {
                   token,
                   userId: parseInt(user.user_id, 10),
+                  firstName: user.first_name,
+                  lastName: user.last_name,
+                  email: user.email,
+                  gender: user.gender,
+                  address: user.address,
+                  jobRole: user.job_role,
+                  department: user.department,
+                  passportUrl: user.passport_url,
+                  hiredOn: user.hired_on,
                 },
               });
             }).catch((error) => {
@@ -216,6 +224,83 @@ exports.signIn = (req, res) => {
     res.status(400).json({
       status: 'error',
       error: 'Bad request',
+    });
+  }
+};
+
+exports.changePasword = (req, res) => {
+  const validate = () => {
+    let isValid = true;
+    const test = {};
+
+    // Test to validate old password
+    if (req.body.oldPassword) {
+      req.body.oldPassword = req.body.oldPassword.toLowerCase();
+      test.oldPassword = lib.isEmpty(req.body.oldPassword) ? 'Invalid' : 'Valid';
+    } else test.oldPassword = 'Undefined';
+
+    // Test to validate new password
+    if (req.body.newPassword) {
+      test.newPassword = (lib.isEmpty(req.body.newPassword) || req.body.newPassword.length < 8) ? 'Invalid: needs to be atleast 8 character long' : 'Valid';
+    } else test.newPassword = 'Undefined';
+
+    const error = {};
+    Object.keys(test).forEach((key) => {
+      if (test[key] !== 'Valid') {
+        error[key] = test[key];
+        if (isValid) isValid = false;
+      }
+    });
+
+    return isValid ? { status: true } : { status: false, error };
+  };
+  const report = validate();
+
+  // Validate request before submitting
+  if (report.status) {
+    // res.send(req.loggedInUser);
+    bcrypt.compare(req.body.oldPassword, req.loggedInUser.password).then((valid) => {
+      if (valid) {
+        // Hash user password
+        bcrypt.hash(req.body.newPassword, 10).then((hash) => {
+          db.query('UPDATE users SET "password"=$1 WHERE user_id = $2', [hash, req.loggedInUser.user_id]).then(() => {
+            res.status(200).json({
+              status: 'success',
+              data: {
+                message: 'Password changed successfully',
+              },
+            });
+          }).catch((error) => {
+            console.log(error);
+            res.status(500).json({
+              status: 'error',
+              error: 'Sorry, we couldn\'t complete your request please try again',
+            });
+          });
+        }).catch((error) => {
+          console.log(error);
+          res.status(500).json({
+            status: 'error',
+            error: 'Sorry, we couldn\'t complete your request please try again',
+          });
+        });
+      } else {
+        res.status(400).json({
+          status: 'error',
+          error: 'Old password incorrect',
+        });
+      }
+    }).catch((error) => {
+      console.log(error);
+      res.status(500).json({
+        status: 'error',
+        error: 'Sorry, we couldn\'t complete your request please try again',
+      });
+    });
+  } else {
+    res.status(400).json({
+      status: 'error',
+      error: report.error,
     });
   }
 };

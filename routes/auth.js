@@ -9,5 +9,6 @@ const authCtrl = require('../controllers/auth');
 
 router.post('/create-user', authenticate.admin, upload.single('passport'), dbDepts, dbUserEmails, authCtrl.createUser);
 router.post('/signin', authCtrl.signIn);
+router.patch('/password', authenticate.employee, authCtrl.changePasword);
 
 module.exports = router;
