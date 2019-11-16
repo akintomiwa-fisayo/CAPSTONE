@@ -20,6 +20,40 @@ const user = {
   }),
 };
 
+const reportsComp = {
+  posts: {
+    postId: 19991,
+    postType: 'article',
+    postAuthor: user.id,
+    title: 'report sample title',
+    article: 'report sample lorem article',
+  },
+};
+reportsComp.comments = {
+  commentId: 19991,
+  postId: reportsComp.posts.postId,
+  authorId: user.id,
+  comment: 'report article comment content',
+};
+reportsComp.reports = {
+  posts: {
+    contentType: reportsComp.posts.postType,
+    contentId: reportsComp.posts.postId,
+    flag: 'inappropriate',
+    reason: 'it is quit lame',
+    reporter: user.id,
+    reportId: 1991,
+  },
+  comments: {
+    contentType: 'comment',
+    contentId: reportsComp.comments.commentId,
+    flag: 'inappropriate',
+    reason: 'it is quit lame',
+    reporter: user.id,
+    reportId: 1992,
+  },
+};
+
 
 // //////////////////////////////////////////////////////////////////////
 exports.users = {
@@ -71,3 +105,5 @@ exports.comments = {
     comment: 'gif comment content',
   },
 };
+
+exports.reportsComp = reportsComp;

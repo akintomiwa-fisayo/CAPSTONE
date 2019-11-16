@@ -252,3 +252,102 @@ exports.getAll = (req, res) => {
     });
   });
 };
+
+exports.attendToOne = (req, res) => {
+  const validate = () => {
+    let test = 'Undefined';
+
+    // Test to validate title
+    if (req.body.action) {
+      req.body.action = req.body.action.toLowerCase();
+      test = ['delete', 'ignore'].indexOf(req.body.action) === -1 ? 'Invalid: most be either "delete" or "ignore"' : 'Valid';
+    }
+    return test === 'Valid' ? { status: true } : { status: false, error: { action: test } };
+  };
+  const valReport = validate();
+
+  // Validate request before processing
+  if (valReport.status) {
+    if (isNaN(req.params.id)) {
+      // Report id has to be an integer
+      res.status(404).json({
+        status: 'error',
+        error: 'Report not found',
+      });
+    } else {
+      db.query(`
+        SELECT * 
+        FROM posts_and_comments_flags 
+        WHERE report_id = $1`, [
+        req.params.id,
+      ]).then(({ rowCount, rows }) => {
+        if (rowCount === 0) {
+          // Report does not exist
+          res.status(404).json({
+            status: 'error',
+            error: 'Report not found',
+          });
+        } else {
+          const report = rows[0];
+          const deleteReport = () => {
+            db.query(`DELETE 
+              FROM posts_and_comments_flags 
+              WHERE report_id = $1`, [
+              report.report_id,
+            ]).then(() => {
+              // Continue parsing after delete
+              res.status(200).json({
+                status: 'success',
+                data: {
+                  message: `Action '${req.body.action}' on report successful`,
+                },
+              });
+            }).catch((error) => {
+              console.log(error);
+              res.status(500).json({
+                status: 'error',
+                error: 'Sorry, we couldn\'t complete your request please try again',
+              });
+            });
+          };
+
+          if (req.body.action === 'delete') {
+            let dest = '';
+            let primaryCol = '';
+            if (report.content_type === 'article' || report.content_type === 'gif') {
+              dest = 'posts';
+              primaryCol = 'post_id';
+            } else {
+              dest = 'post_comments';
+              primaryCol = 'comment_id';
+            }
+
+            db.query(`
+              DELETE 
+              FROM ${dest} 
+              WHERE ${primaryCol} = $1`, [
+              report.content_id,
+            ]).then(() => {
+              // Delete report after reported content is deleted successfully
+              deleteReport();
+            }).catch((error) => {
+              console.log(error);
+              res.status(500).json({
+                status: 'error',
+                error: 'Sorry, we couldn\'t complete your request please try again',
+              });
+            });
+          } else {
+            // If action is 'ignore'
+            deleteReport();
+          }
+        }
+      });
+    }
+  } else {
+    res.status(400).json({
+      status: 'error',
+      error: valReport.error,
+    });
+  }
+};
