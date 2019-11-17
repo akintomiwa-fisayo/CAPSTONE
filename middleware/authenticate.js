@@ -14,7 +14,6 @@ exports.parseUser = (req) => new Promise((resolve, reject) => {
       .then(({ rowCount, rows }) => resolve(rowCount > 0 ? rows[0] : false))
       .catch((error) => reject(error));
   } catch (error) {
-    // reject('meme');
     reject(['TokenExpiredError', 'JsonWebTokenError'].indexOf(error.name) === -1 ? error : false);
   }
 });
