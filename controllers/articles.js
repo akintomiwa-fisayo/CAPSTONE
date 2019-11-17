@@ -209,6 +209,7 @@ exports.getOne = (req, res) => {
               title: article.title,
               article: article.article,
               comments,
+              authorId: article.post_author,
             },
           });
         }).catch((error) => {
