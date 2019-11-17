@@ -207,6 +207,7 @@ exports.getOne = (req, res) => {
               title: gif.title,
               url: gif.image_url,
               comments,
+              author: gif.post_author,
             },
           });
         }).catch((error) => {
