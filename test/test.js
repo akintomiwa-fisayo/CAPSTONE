@@ -1,6 +1,7 @@
 require('./api/test_database/build_db');
 require('./api/auth/create_user');
 require('./api/auth/sign_in');
+require('./api/users/get_a_user');
 require('./api/gifs/create_a_gif');
 require('./api/gifs/edit_a_gif');
 require('./api/gifs/get_a_gif');
