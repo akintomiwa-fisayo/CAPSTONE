@@ -18,6 +18,7 @@ describe('GET /articles/:id', () => {
         expect(body.data).to.contain.property('createdOn');
         expect(body.data).to.contain.property('title');
         expect(body.data).to.contain.property('article');
+        expect(body.data).to.contain.property('authorId');
         expect(body.data).to.contain.property('comments').to.be.an('array');
         for (let i = 0; i < body.data.comments.length; i++) {
           expect(body.data.comments[i]).to.contain.property('commentId');
