@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/akintomiwa-fisayo/CAPSTONE-backend.svg?branch=develop)](https://travis-ci.org/akintomiwa-fisayo/CAPSTONE-backend)
-[![Coverage Status](https://coveralls.io/repos/github/akintomiwa-fisayo/CAPSTONE-backend/badge.svg?branch=develop&service=github)](https://coveralls.io/github/akintomiwa-fisayo/CAPSTONE-backend?branch=develop)
+[![Coverage Status](https://coveralls.io/repos/github/akintomiwa-fisayo/CAPSTONE-backend/badge.svg?branch=develop)](https://coveralls.io/github/akintomiwa-fisayo/CAPSTONE-backend?branch=develop&service=github)
 
 # CAPSTONE-backend
 This repo is the backend to [Akintomiwa Fisayo](https://github.com/akintomiwa-fisayo) [DevCTrainingwithAndela](https://devctraining.andela.com) capstone project
