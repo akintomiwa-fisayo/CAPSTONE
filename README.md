@@ -52,7 +52,7 @@ visit build history https://travis-ci.org/akintomiwa-fisayo/CAPSTONE-backend/pul
   POST http://localhost:3000/auth/signin
   ```
   >
-  * Admin can get all get all reported contents (article and gif posts and comments).
+  * Admin can get all reported contents (article and gif posts and comments).
   ```node
   GET http://localhost:3000/reports
   ```
