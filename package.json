@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
+  "engines": {
+    "node": "12.9.1"
+  },
   "scripts": {
     "start": "nodemon server.js",
     "test": "set NODE_ENV=test&&mocha --exist",
