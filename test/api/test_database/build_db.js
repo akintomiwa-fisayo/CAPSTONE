@@ -15,15 +15,13 @@ const {
 describe('Test database', () => {
   it('Should build test database', (done) => {
     const buildSequences = () => new Promise((resolve, reject) => {
-      db.query(`\
+      db.query('\
         CREATE SEQUENCE public."commentId-increment"\
           INCREMENT 1\
           START 100\
           MINVALUE 100\
           MAXVALUE 99999999999999\
           CACHE 1;\
-        ALTER SEQUENCE "commentId-increment"\
-          OWNER TO ${process.env.DB_USER};\
         \
         CREATE SEQUENCE public."postId-increment"\
           INCREMENT 1\
@@ -31,8 +29,6 @@ describe('Test database', () => {
           MINVALUE 100\
           MAXVALUE 99999999999999\
           CACHE 1;\
-        ALTER SEQUENCE "postId-increment"\
-          OWNER TO ${process.env.DB_USER};\
         \
         CREATE SEQUENCE public."reportId-increment"\
           INCREMENT 1\
@@ -40,8 +36,6 @@ describe('Test database', () => {
           MINVALUE 1\
           MAXVALUE 99999999999999\
           CACHE 1;\
-        ALTER SEQUENCE "reportId-increment"\
-          OWNER TO ${process.env.DB_USER};\
         \
         CREATE SEQUENCE public."userId-increment"\
           INCREMENT 1\
@@ -49,9 +43,7 @@ describe('Test database', () => {
           MINVALUE 1000\
           MAXVALUE 99999999999999\
           CACHE 1;\
-        ALTER SEQUENCE public."userId-increment"\
-          OWNER TO ${process.env.DB_USER};\
-      `).then((result) => resolve(result))
+      ').then((result) => resolve(result))
         .catch((error) => reject(error));
     });
 
