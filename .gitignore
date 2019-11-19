@@ -2,3 +2,4 @@ node_modules
 testDb.js
 .nyc_output
 coverage
+.env
