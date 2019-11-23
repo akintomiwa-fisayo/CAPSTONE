@@ -20,16 +20,6 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
   next();
 });
-const jwt = require('jsonwebtoken');
-
-
-console.log('USER : ', jwt.sign({ userId: 1067, email: 'user@gmail.com' }, process.env.USERS_TOKEN_SECRET, {
-  expiresIn: '99999999d',
-}));
-
-console.log('ADMIN : ', jwt.sign({ userId: 1065, email: 'admin@gmail.com' }, process.env.USERS_TOKEN_SECRET, {
-  expiresIn: '99999999d',
-}));
 
 // Connect to database
 db.connect().then(() => {
