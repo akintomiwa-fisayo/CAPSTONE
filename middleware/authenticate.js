@@ -20,9 +20,10 @@ exports.parseUser = (req) => new Promise((resolve, reject) => {
 
 
 exports.employee = (req, res, next) => {
-  exports.parseUser(req).then((result) => {
-    if (result) {
-      req.loggedInUser = result;
+  exports.parseUser(req).then((user) => {
+    if (user) {
+      req.loggedInUser = user;
+      req.loggedInUser.user_id = parseInt(user.user_id, 10);
       next();
     } else {
       res.status(401).json({
@@ -45,6 +46,8 @@ exports.admin = (req, res, next) => {
       db.query('SELECT job_title FROM job_roles WHERE job_id = $1', [user.job_role]).then(({ rowCount, rows }) => {
         if (rowCount > 0 && rows[0].job_title === 'admin') {
           req.loggedInUser = user;
+          req.loggedInUser.user_id = parseInt(user.user_id, 10);
+
           next();
         } else {
           console.log('Error : User not admin');

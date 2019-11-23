@@ -27,6 +27,11 @@ exports.getOne = (req, res) => {
         hiredOn: rows[0].hired_on,
       };
 
+      console.log('userid : ', user.id, 'logd user : ', req.loggedInUser.user_id);
+      if (user.id === req.loggedInUser.user_id) {
+        user.address = rows[0].address;
+      }
+
       if (req.query.columns) {
         columns = req.query.columns.split(',');
         Object.keys(user).forEach((key) => {
