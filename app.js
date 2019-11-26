@@ -10,6 +10,7 @@ const feedRoutes = require('./routes/feed');
 const articlesRoutes = require('./routes/articles');
 const reportsRoutes = require('./routes/reports');
 const usersRoutes = require('./routes/users');
+const jobsRoute = require('./routes/jobs');
 // Initialize app
 const app = express();
 
@@ -48,6 +49,7 @@ app.use('/articles', articlesRoutes);
 app.use('/feed', feedRoutes);
 app.use('/reports', reportsRoutes);
 app.use('/users', usersRoutes);
+app.use('/jobs', jobsRoute);
 
 // Handle error
 app.use((req, res, next) => {
