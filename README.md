@@ -74,12 +74,12 @@ visit build history https://travis-ci.org/akintomiwa-fisayo/CAPSTONE-backend/pul
   >
  * Admin/Employees can get all their article posts.
   ```node
-  GET http://localhost:3000/users/:id/article
+  GET http://localhost:3000/users/:id/articles
   ```
   >
  * Admin/Employees can get all their gif posts.
   ```node
-  GET http://localhost:3000/users/:id/gif
+  GET http://localhost:3000/users/:id/gifs
   ```
   >
  * Admin/Employees can create an article post .
