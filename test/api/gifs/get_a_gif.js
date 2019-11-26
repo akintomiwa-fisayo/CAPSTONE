@@ -24,6 +24,7 @@ describe('GET /gifs/:id', () => {
           expect(body.data.comments[i]).to.contain.property('commentId');
           expect(body.data.comments[i]).to.contain.property('comment');
           expect(body.data.comments[i]).to.contain.property('authorId');
+          expect(body.data.comments[i]).to.contain.property('createdOn');
         }
         done();
       })

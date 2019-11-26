@@ -1,4 +1,5 @@
 require('./api/test_database/build_db');
+require('./api/jobs/get_job_roles');
 require('./api/auth/create_user');
 require('./api/auth/sign_in');
 require('./api/users/get_a_user');
@@ -14,6 +15,8 @@ require('./api/articles/comment_on_an_article');
 require('./api/articles/flag_an_article');
 require('./api/articles/flag_an_article_comment');
 require('./api/articles/get_an_article');
+require('./api/users/get_a_user_articles');
+require('./api/users/get_a_user_gifs');
 require('./api/get_all_posts');
 require('./api/reports/get_all_reports');
 require('./api/reports/attend_to_a_report');

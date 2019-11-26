@@ -185,7 +185,7 @@ exports.getOne = (req, res) => {
         // Get comments
         const gif = rows[0];
         db.query(`
-          SELECT comm.comment_id, comm.author_id, comm.comment
+          SELECT comm.comment_id, comm.author_id, comm.comment, comm.created_on
           FROM posts 
           INNER JOIN post_comments comm
           ON posts.post_id = comm.post_id
@@ -197,6 +197,7 @@ exports.getOne = (req, res) => {
               commentId: comm[i].comment_id,
               comment: comm[i].comment,
               authorId: comm[i].author_id,
+              createdOn: comm[i].created_on,
             });
           }
           res.status(200).json({
