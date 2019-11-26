@@ -50,7 +50,6 @@ exports.admin = (req, res, next) => {
 
           next();
         } else {
-          console.log('Error : User not admin');
           res.status(401).json({
             status: 'error',
             error: 'Unauthorized',

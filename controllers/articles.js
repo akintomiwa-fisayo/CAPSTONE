@@ -171,62 +171,64 @@ exports.modify = (req, res) => {
 exports.getOne = (req, res) => {
   // Validate that post exist
   db.query(`
-      SELECT *
-      FROM posts 
-      INNER JOIN articles 
-      ON posts.post_id = articles.post_id
-      WHERE posts.post_id = $1
-      `, [req.params.id])
-    .then(({ rowCount, rows }) => {
-      if (rowCount === 0) {
-        res.status(404).json({
-          status: 'error',
-          error: 'Article not found',
-        });
-      } else {
-        // Get comments
-        const article = rows[0];
-        db.query(`
-          SELECT comm.comment_id, comm.author_id, comm.comment
-          FROM posts 
-          INNER JOIN post_comments comm
-          ON posts.post_id = comm.post_id
-          WHERE posts.post_id = $1
-          `, [req.params.id]).then(({ rows: comm }) => {
-          const comments = [];
-          for (let i = 0; i < comm.length; i++) {
-            comments.push({
-              commentId: comm[i].comment_id,
-              comment: comm[i].comment,
-              authorId: comm[i].author_id,
-            });
-          }
-          res.status(200).json({
-            status: 'success',
-            data: {
-              id: article.post_id,
-              createdOn: article.created_on,
-              title: article.title,
-              article: article.article,
-              comments,
-              authorId: article.post_author,
-            },
-          });
-        }).catch((error) => {
-          console.log(error);
-          res.status(500).json({
-            status: 'error',
-            error: 'Sorry, we couldn\'t complete your request please try again',
-          });
-        });
-      }
-    }).catch((error) => {
-      console.log(error);
-      res.status(500).json({
+    SELECT *
+    FROM posts 
+    INNER JOIN articles 
+    ON posts.post_id = articles.post_id
+    WHERE posts.post_id = $1
+    `, [
+    req.params.id,
+  ]).then(({ rowCount, rows }) => {
+    if (rowCount === 0) {
+      res.status(404).json({
         status: 'error',
-        error: 'Sorry, we couldn\'t complete your request please try again',
+        error: 'Article not found',
       });
+    } else {
+      // Get comments
+      const article = rows[0];
+      db.query(`
+      SELECT comm.comment_id, comm.author_id, comm.comment, comm.created_on
+      FROM posts 
+      INNER JOIN post_comments comm
+      ON posts.post_id = comm.post_id
+      WHERE posts.post_id = $1
+      `, [req.params.id]).then(({ rows: comm }) => {
+        const comments = [];
+        for (let i = 0; i < comm.length; i++) {
+          comments.push({
+            commentId: comm[i].comment_id,
+            comment: comm[i].comment,
+            authorId: comm[i].author_id,
+            createdOn: comm[i].created_on,
+          });
+        }
+        res.status(200).json({
+          status: 'success',
+          data: {
+            id: article.post_id,
+            createdOn: article.created_on,
+            title: article.title,
+            article: article.article,
+            comments,
+            authorId: article.post_author,
+          },
+        });
+      }).catch((error) => {
+        console.log(error);
+        res.status(500).json({
+          status: 'error',
+          error: 'Sorry, we couldn\'t complete your request please try again',
+        });
+      });
+    }
+  }).catch((error) => {
+    console.log(error);
+    res.status(500).json({
+      status: 'error',
+      error: 'Sorry, we couldn\'t complete your request please try again',
     });
+  });
 };
 
 exports.flag = (req, res) => {
