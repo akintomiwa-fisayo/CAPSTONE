@@ -8,9 +8,9 @@ exports.parseUser = (req) => new Promise((resolve, reject) => {
     if (!req.headers.authorization) throw new Error('Bearer token undefined');
     const token = req.headers.authorization.split(' ')[1];
     const decodedToken = jwt.verify(token, process.env.USERS_TOKEN_SECRET);
-    const { userId, email } = decodedToken;
+    const { userId, email, password } = decodedToken;
     // check if userId and email are attached to an account
-    db.query('SELECT * FROM users WHERE "user_id"=$1 AND "email"=$2', [userId, email])
+    db.query('SELECT * FROM users WHERE "user_id"=$1 AND "email"=$2 AND "password"=$3', [userId, email, password])
       .then(({ rowCount, rows }) => resolve(rowCount > 0 ? rows[0] : false))
       .catch((error) => reject(error));
   } catch (error) {
