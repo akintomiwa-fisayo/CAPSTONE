@@ -135,7 +135,7 @@ exports.modify = (req, res) => {
           req.params.id,
           req.loggedInUser.user_id,
         ]).then(({ rows: [gif] }) => {
-          res.status(201).json({
+          res.status(200).json({
             status: 'success',
             data: {
               message: 'Gif successfully updated',

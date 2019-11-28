@@ -257,7 +257,7 @@ exports.attendToOne = (req, res) => {
   const validate = () => {
     let test = 'Undefined';
 
-    // Test to validate title
+    // Test to validate action
     if (req.body.action) {
       req.body.action = req.body.action.toLowerCase();
       test = ['delete', 'ignore'].indexOf(req.body.action) === -1 ? 'Invalid: most be either "delete" or "ignore"' : 'Valid';
