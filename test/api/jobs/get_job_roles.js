@@ -2,13 +2,13 @@
 const { expect } = require('chai');
 const request = require('supertest');
 const app = require('../../../app');
-const { users: { admin } } = require('../samples');
+const { users: { user } } = require('../samples');
 
 describe('GET /jobs', () => {
-  it('Should all departments and jobs in them', (done) => {
+  it('Should get all departments and jobs in them', (done) => {
     request(app).get('/jobs')
       .set('Content-Type', 'application/json')
-      .set('Authorization', `Bearer ${admin.token}`)
+      .set('Authorization', `Bearer ${user.token}`)
       .send()
       .then((res) => {
         const { body, status } = res;

@@ -5,7 +5,7 @@ const authenticate = require('../middleware/authenticate');
 const db = require('../dbconn');
 
 
-router.get('/', authenticate.admin, (req, res) => {
+router.get('/', authenticate.employee, (req, res) => {
   db.query(`
     SELECT 
     departments.dept_id, 
