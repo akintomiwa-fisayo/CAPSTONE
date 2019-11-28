@@ -111,6 +111,7 @@ exports.createUser = (req, res) => {
           const token = jwt.sign({
             userId,
             email: data.email,
+            password: hash
           }, process.env.USERS_TOKEN_SECRET, {
             expiresIn: '24h',
           });
@@ -166,6 +167,7 @@ exports.signIn = (req, res) => {
             const token = jwt.sign({
               userId: user.user_id,
               email: req.body.email,
+              password: user.password,
             }, process.env.USERS_TOKEN_SECRET, {
               expiresIn: '24h',
             });
@@ -267,6 +269,7 @@ exports.changePasword = (req, res) => {
           const token = jwt.sign({
             userId: req.loggedInUser.user_id,
             email: req.loggedInUser.email,
+            password: hash,
           }, process.env.USERS_TOKEN_SECRET, {
             expiresIn: '24h',
           });

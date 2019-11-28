@@ -1,11 +1,12 @@
 const jwt = require('jsonwebtoken');
 
+const userPassword = '$2b$10$NJKkups9jG6D4ZV7s8y7tOtvtuR5jgtPA6xuJgGzx2Xf3rnrNOIky';
 const user = {
   id: 1067,
   firstName: 'name',
   lastName: 'name',
   email: 'user@gmail.com',
-  password: '$2b$10$NJKkups9jG6D4ZV7s8y7tOtvtuR5jgtPA6xuJgGzx2Xf3rnrNOIky',
+  password: userPassword,
   passwordText: 'password',
   gender: 'male',
   jobRole: 'j1003',
@@ -15,6 +16,7 @@ const user = {
   token: jwt.sign({
     userId: 1067,
     email: 'user@gmail.com',
+    password: userPassword,
   }, process.env.USERS_TOKEN_SECRET, {
     expiresIn: '24h',
   }),
@@ -66,6 +68,7 @@ exports.users = {
     token: jwt.sign({
       userId: 1065,
       email: 'admin@gmail.com',
+      password: userPassword,
     }, process.env.USERS_TOKEN_SECRET, {
       expiresIn: '24h',
     }),

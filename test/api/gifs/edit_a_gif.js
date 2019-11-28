@@ -12,7 +12,7 @@ describe('PATCH /gifs/:id', () => {
       .send({ title: 'edited gif post title' })
       .then((res) => {
         const { body, status } = res;
-        expect(status).to.equal(201);
+        expect(status).to.equal(200);
         expect(body).to.contain.property('status').to.equal('success');
         expect(body).to.contain.property('data');
         expect(body.data).to.contain.property('message');
