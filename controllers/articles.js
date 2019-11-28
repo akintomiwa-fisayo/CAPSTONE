@@ -48,6 +48,7 @@ exports.create = (req, res) => {
             articleId: parseInt(postId, 10),
             createdOn,
             title: req.body.title,
+            article: req.body.article,
           },
         });
       }).catch((error) => {
@@ -137,7 +138,7 @@ exports.modify = (req, res) => {
           req.params.id,
           req.loggedInUser.user_id,
         ]).then(({ rows: [article] }) => {
-          res.status(201).json({
+          res.status(200).json({
             status: 'success',
             data: {
               message: 'Article successfully updated',

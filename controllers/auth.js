@@ -263,11 +263,26 @@ exports.changePasword = (req, res) => {
       if (valid) {
         // Hash user password
         bcrypt.hash(req.body.newPassword, 10).then((hash) => {
-          db.query('UPDATE users SET "password"=$1 WHERE user_id = $2', [hash, req.loggedInUser.user_id]).then(() => {
+          // generate new token
+          const token = jwt.sign({
+            userId: req.loggedInUser.user_id,
+            email: req.loggedInUser.email,
+          }, process.env.USERS_TOKEN_SECRET, {
+            expiresIn: '24h',
+          });
+
+          db.query(`UPDATE users 
+            SET "password"=$1, "token"=$2 
+            WHERE user_id = $3`, [
+            hash,
+            token,
+            req.loggedInUser.user_id,
+          ]).then(() => {
             res.status(200).json({
               status: 'success',
               data: {
                 message: 'Password changed successfully',
+                token,
               },
             });
           }).catch((error) => {
