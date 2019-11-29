@@ -6,7 +6,7 @@ const { users: { user }, posts: { gifs } } = require('../samples');
 
 describe('POST /gifs/:id/flag', () => {
   it('Should flag a gif', (done) => {
-    request(app).post(`/gifs/${gifs.postId}/flag`)
+    request(app).post(`/api/v1/gifs/${gifs.postId}/flag`)
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${user.token}`)
       .send({

@@ -6,7 +6,7 @@ const { users: { user }, posts: { gifs } } = require('../samples');
 
 describe('PATCH /gifs/:id', () => {
   it('Should edit a gif title', (done) => {
-    request(app).patch(`/gifs/${gifs.postId}`)
+    request(app).patch(`/api/v1/gifs/${gifs.postId}`)
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${user.token}`)
       .send({ title: 'edited gif post title' })

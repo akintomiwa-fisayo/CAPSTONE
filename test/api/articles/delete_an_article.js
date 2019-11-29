@@ -6,7 +6,7 @@ const { users: { user }, posts: { articles } } = require('../samples');
 
 describe('DELETE /articles/:id', () => {
   it('Should delete an article', (done) => {
-    request(app).delete(`/articles/${articles.postId}`)
+    request(app).delete(`/api/v1/articles/${articles.postId}`)
       .set('Authorization', `Bearer ${user.token}`)
       .send()
       .then((res) => {

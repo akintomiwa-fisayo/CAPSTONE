@@ -6,7 +6,7 @@ const { users: { user }, posts: { gifs }, comments: { gifs: gifsComment } } = re
 
 describe('POST /gifs/:id/comment/:commentId/flag', () => {
   it('Should flag a gif comment', (done) => {
-    request(app).post(`/gifs/${gifs.postId}/comment/${gifsComment.commentId}/flag`)
+    request(app).post(`/api/v1/gifs/${gifs.postId}/comment/${gifsComment.commentId}/flag`)
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${user.token}`)
       .send({

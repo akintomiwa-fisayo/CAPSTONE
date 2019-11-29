@@ -111,7 +111,7 @@ exports.createUser = (req, res) => {
           const token = jwt.sign({
             userId,
             email: data.email,
-            password: hash
+            password: hash,
           }, process.env.USERS_TOKEN_SECRET, {
             expiresIn: '24h',
           });
@@ -158,15 +158,15 @@ exports.createUser = (req, res) => {
 };
 
 exports.signIn = (req, res) => {
-  if (req.body.email && req.body.password) {
-    db.query('SELECT * FROM users WHERE "email"=$1', [req.body.email]).then(({ rowCount, rows }) => {
+  if (req.body.username && req.body.password) {
+    db.query('SELECT * FROM users WHERE "email"=$1', [req.body.username]).then(({ rowCount, rows }) => {
       if (rowCount > 0) {
         const user = rows[0];
         bcrypt.compare(req.body.password, user.password).then((valid) => {
           if (valid) {
             const token = jwt.sign({
               userId: user.user_id,
-              email: req.body.email,
+              email: req.body.username,
               password: user.password,
             }, process.env.USERS_TOKEN_SECRET, {
               expiresIn: '24h',

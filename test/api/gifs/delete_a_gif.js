@@ -6,7 +6,7 @@ const { users: { user }, posts: { gifs } } = require('../samples');
 
 describe('DELETE /gifs/:id', () => {
   it('Should delete a gif', (done) => {
-    request(app).delete(`/gifs/${gifs.postId}`)
+    request(app).delete(`/api/v1/gifs/${gifs.postId}`)
       .set('Authorization', `Bearer ${user.token}`)
       .send()
       .then((res) => {

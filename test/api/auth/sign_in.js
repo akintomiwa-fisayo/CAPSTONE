@@ -8,9 +8,9 @@ const { users: { user } } = require('../samples');
 
 describe('POST /auth/signin', () => {
   it('Should sign user in', (done) => {
-    request(app).post('/auth/signin')
+    request(app).post('/api/v1/auth/signin')
       .set('Content-Type', 'application/json')
-      .send({ password: user.passwordText, email: user.email })
+      .send({ password: user.passwordText, username: user.email })
       .then((res) => {
         const { body, status } = res;
         expect(status).to.equal(200);
