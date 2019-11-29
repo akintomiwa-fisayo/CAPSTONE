@@ -6,7 +6,7 @@ const { users: { user } } = require('../samples');
 
 describe('GET /user/:id', () => {
   it('Should get a user', (done) => {
-    request(app).get(`/users/${user.id}`)
+    request(app).get(`/api/v1/users/${user.id}`)
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${user.token}`)
       .send()
@@ -29,7 +29,7 @@ describe('GET /user/:id', () => {
   }).timeout(6000);
 
   it('Should get a user (only columns requested)', (done) => {
-    request(app).get(`/users/${user.id}`)
+    request(app).get(`/api/v1/users/${user.id}`)
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${user.token}`)
       .query({

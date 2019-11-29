@@ -8,7 +8,7 @@ const { users: { user } } = require('../samples');
 
 describe('PATCH /auth/password', () => {
   it('Should chnage user\'s password in', (done) => {
-    request(app).patch('/auth/password')
+    request(app).patch('/api/v1/auth/password')
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${user.token}`)
       .send({

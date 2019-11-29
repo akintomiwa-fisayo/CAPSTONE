@@ -6,7 +6,7 @@ const { users: { user }, posts: { articles } } = require('../samples');
 
 describe('PATCH /articles/:id', () => {
   it('Should edit an article', (done) => {
-    request(app).patch(`/articles/${articles.postId}`)
+    request(app).patch(`/api/v1/articles/${articles.postId}`)
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${user.token}`)
       .send({

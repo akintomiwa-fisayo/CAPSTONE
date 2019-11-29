@@ -23,7 +23,7 @@ describe('POST /gifs', () => {
   });
 
   it('Should create a gif', (done) => {
-    request(app).post('/gifs')
+    request(app).post('/api/v1/gifs')
       .set('Content-Type', 'application/x-www-form-urlencoded')
       .set('Authorization', `Bearer ${user.token}`)
       .field('title', 'gif post title')

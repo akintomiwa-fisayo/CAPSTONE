@@ -6,7 +6,7 @@ const { users: { admin }, reportsComp } = require('../samples');
 
 describe('PATCH /reports/:id', () => {
   it('Should attend to a report (ignore)', (done) => {
-    request(app).patch(`/reports/${reportsComp.reports.posts.reportId}`)
+    request(app).patch(`/api/v1/reports/${reportsComp.reports.posts.reportId}`)
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${admin.token}`)
       .send({ action: 'ignore' })

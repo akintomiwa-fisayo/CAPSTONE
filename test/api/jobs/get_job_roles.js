@@ -6,7 +6,7 @@ const { users: { user } } = require('../samples');
 
 describe('GET /jobs', () => {
   it('Should get all departments and jobs in them', (done) => {
-    request(app).get('/jobs')
+    request(app).get('/api/v1/jobs')
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${user.token}`)
       .send()

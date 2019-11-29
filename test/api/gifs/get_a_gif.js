@@ -6,7 +6,7 @@ const { users: { user }, posts: { gifs } } = require('../samples');
 
 describe('GET /gifs/:id', () => {
   it('Should get a gif', (done) => {
-    request(app).get(`/gifs/${gifs.postId}`)
+    request(app).get(`/api/v1/gifs/${gifs.postId}`)
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${user.token}`)
       .send()

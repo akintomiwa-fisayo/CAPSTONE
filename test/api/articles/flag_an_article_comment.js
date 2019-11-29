@@ -6,7 +6,7 @@ const { users: { user }, posts: { articles }, comments: { articles: articlesComm
 
 describe('POST /articles/:id/comment/:commentId/flag', () => {
   it('Should flag an article comment', (done) => {
-    request(app).post(`/articles/${articles.postId}/comment/${articlesComment.commentId}/flag`)
+    request(app).post(`/api/v1/articles/${articles.postId}/comment/${articlesComment.commentId}/flag`)
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${user.token}`)
       .send({
