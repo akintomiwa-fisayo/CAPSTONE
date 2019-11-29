@@ -6,7 +6,7 @@ const { users: { user }, posts: { gifs } } = require('../samples');
 
 describe('POST /gifs/:id/comment', () => {
   it('Should create a gif comment', (done) => {
-    request(app).post(`/gifs/${gifs.postId}/comment`)
+    request(app).post(`/api/v1/gifs/${gifs.postId}/comment`)
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${user.token}`)
       .send({ comment: 'new comment' })

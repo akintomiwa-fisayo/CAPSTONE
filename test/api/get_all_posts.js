@@ -7,7 +7,7 @@ const { users: { user } } = require('./samples');
 
 describe('GET /feed', () => {
   it('Should get all posts', (done) => {
-    request(app).get('/feed')
+    request(app).get('/api/v1/feeds')
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${user.token}`)
       .send()

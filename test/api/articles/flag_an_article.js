@@ -6,7 +6,7 @@ const { users: { user }, posts: { articles } } = require('../samples');
 
 describe('POST /articles/:id/flag', () => {
   it('Should flag an article', (done) => {
-    request(app).post(`/articles/${articles.postId}/flag`)
+    request(app).post(`/api/v1/articles/${articles.postId}/flag`)
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${user.token}`)
       .send({

@@ -7,7 +7,7 @@ const { users: { user } } = require('../samples');
 
 describe('POST /articles', () => {
   it('Should create an article', (done) => {
-    request(app).post('/articles')
+    request(app).post('/api/v1/articles')
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${user.token}`)
       .send({

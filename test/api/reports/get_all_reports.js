@@ -6,7 +6,7 @@ const { users: { admin } } = require('../samples');
 
 describe('GET /reports', () => {
   it('Should get all reports', (done) => {
-    request(app).get('/reports')
+    request(app).get('/api/v1/reports')
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${admin.token}`)
       .send()

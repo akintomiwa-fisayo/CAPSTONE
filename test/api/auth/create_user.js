@@ -23,7 +23,7 @@ describe('POST /auth/create-user', () => {
   });
 
   it('Should create new employee account', (done) => {
-    request(app).post('/auth/create-user')
+    request(app).post('/api/v1/auth/create-user')
       .set('Content-Type', 'application/x-www-form-urlencoded')
       .set('Authorization', `Bearer ${admin.token}`)
       .field('gender', 'male')
