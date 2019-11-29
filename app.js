@@ -43,13 +43,13 @@ app.use((req, res, next) => {
 });
 
 // Route requests to specific URI
-app.use('/auth', authRoutes);
-app.use('/gifs', gifsRoutes);
-app.use('/articles', articlesRoutes);
-app.use('/feed', feedRoutes);
-app.use('/reports', reportsRoutes);
-app.use('/users', usersRoutes);
-app.use('/jobs', jobsRoute);
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/gifs', gifsRoutes);
+app.use('/api/v1/articles', articlesRoutes);
+app.use('/api/v1/feeds', feedRoutes);
+app.use('/api/v1/reports', reportsRoutes);
+app.use('/api/v1/users', usersRoutes);
+app.use('/api/v1/jobs', jobsRoute);
 
 // Handle error
 app.use((req, res, next) => {
