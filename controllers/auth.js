@@ -159,14 +159,15 @@ exports.createUser = (req, res) => {
 
 exports.signIn = (req, res) => {
   if (req.body.username && req.body.password) {
-    db.query('SELECT * FROM users WHERE "email"=$1', [req.body.username]).then(({ rowCount, rows }) => {
+    const username = req.body.username.toLowerCase();
+    db.query('SELECT * FROM users WHERE "email"=$1', [username]).then(({ rowCount, rows }) => {
       if (rowCount > 0) {
         const user = rows[0];
         bcrypt.compare(req.body.password, user.password).then((valid) => {
           if (valid) {
             const token = jwt.sign({
               userId: user.user_id,
-              email: req.body.username,
+              email: username,
               password: user.password,
             }, process.env.USERS_TOKEN_SECRET, {
               expiresIn: '24h',
